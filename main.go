@@ -8,11 +8,11 @@ import (
 )
 
 type Talent struct {
-	Id      int
-	Name    string
-	Batch   int
-	Phone   string
-	Address string
+	Id      int    `json:"id"`
+	Name    string `json:"name" binding:"required"`
+	Batch   int    `json:"batch" binding:"required"`
+	Phone   string `json:"phone"`
+	Address string `json:"address"`
 }
 
 type ResponseGetAllTalents struct {
