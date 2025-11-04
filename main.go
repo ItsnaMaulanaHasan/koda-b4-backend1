@@ -7,178 +7,87 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Talent struct {
-	Id      int    `json:"id"`
-	Name    string `json:"name" binding:"required"`
-	Batch   int    `json:"batch" binding:"required"`
-	Phone   string `json:"phone"`
-	Address string `json:"address"`
-}
-
-type ResponseGetAllTalents struct {
-	Success bool     `json:"success"`
-	Message string   `json:"message"`
-	Data    []Talent `json:"data"`
-}
-
-type ResponseGetTalentById struct {
-	Success bool   `json:"success"`
-	Message string `json:"message"`
-	Data    Talent `json:"data"`
+type User struct {
+	Id       int    `json:"id"`
+	Username string `json:"username" binding:"required"`
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 type Response struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
+	Data    any    `json:"data"`
 }
 
-// type Query struct {
-// 	Name  string `form:"name" binding:"len=10"`
-// 	Batch string `form:"batch"`
-// }
-
-var talents = []Talent{
+var users = []User{
 	{
-		Id:      1,
-		Name:    "Itsna",
-		Batch:   4,
-		Phone:   "12345678",
-		Address: "Pati",
+		Id:       1,
+		Username: "Itsna",
+		Email:    "itsna@mail.com",
+		Password: "12345",
 	},
 	{
-		Id:      2,
-		Name:    "Federus",
-		Batch:   4,
-		Phone:   "12345678",
-		Address: "Aceh",
+		Id:       2,
+		Username: "Federus",
+		Email:    "federus@mail.com",
+		Password: "12345",
 	},
 	{
-		Id:      3,
-		Name:    "Ari",
-		Batch:   4,
-		Phone:   "12345678",
-		Address: "Depok",
+		Id:       3,
+		Username: "Ari",
+		Email:    "ari@mail.com",
+		Password: "12345",
 	},
 	{
-		Id:      4,
-		Name:    "Yoga",
-		Batch:   4,
-		Phone:   "12345678",
-		Address: "Cibubur",
+		Id:       4,
+		Username: "Yoga",
+		Email:    "yoga@mail.com",
+		Password: "12345",
 	},
 	{
-		Id:      5,
-		Name:    "Fiki",
-		Batch:   4,
-		Phone:   "12345678",
-		Address: "Sidoarjo",
+		Id:       5,
+		Username: "Fiki",
+		Email:    "fiki@mail.com",
+		Password: "12345",
 	},
 	{
-		Id:      6,
-		Name:    "Sidik",
-		Batch:   4,
-		Phone:   "12345678",
-		Address: "Jepara",
+		Id:       6,
+		Username: "Sidik",
+		Email:    "sidik@mail.com",
+		Password: "12345",
 	},
 	{
-		Id:      7,
-		Name:    "Anggi",
-		Batch:   4,
-		Phone:   "12345678",
-		Address: "Jambi",
+		Id:       7,
+		Username: "Anggi",
+		Email:    "anggi@mail.com",
+		Password: "12345",
 	},
 }
 
 func main() {
 	r := gin.Default()
 
-	// Mendapatkan semua data talent
-	r.GET("/talents", func(ctx *gin.Context) {
-		ctx.JSON(200, ResponseGetAllTalents{
+	// Mendapatkan semua data user
+	r.GET("/users", func(ctx *gin.Context) {
+		ctx.JSON(200, Response{
 			Success: true,
-			Message: "Success get data talents",
-			Data:    talents,
+			Message: "Success get all user",
+			Data:    users,
 		})
 	})
 
-	// Mendapatkan data talent berdasarkan id
-	r.GET("/talents/:id", func(ctx *gin.Context) {
+	// Mendapatkan data user berdasarkan id
+	r.GET("/users/:id", func(ctx *gin.Context) {
 		id := ctx.Param("id")
 		idInt, _ := strconv.Atoi(id)
 
-		var result Talent
+		var result User
 
 		found := false
-		for i := range talents {
-			if talents[i].Id == idInt {
-				result = talents[i]
-				found = true
-			}
-		}
-
-		if found {
-			ctx.JSON(200, ResponseGetTalentById{
-				Success: true,
-				Message: "Talent data found",
-				Data:    result,
-			})
-		} else {
-			ctx.JSON(404, Response{
-				Success: false,
-				Message: "Talent data not found",
-			})
-		}
-	})
-
-	// Menambah user baru
-	r.POST("/talents", func(ctx *gin.Context) {
-		var body Talent
-
-		err := ctx.BindJSON(&body)
-
-		if err != nil {
-			ctx.JSON(400, Response{
-				Success: false,
-				Message: fmt.Sprintf("Failed to add talent: %v", err.Error()),
-			})
-			return
-		}
-
-		ctx.JSON(200, gin.H{
-			"success": true,
-			"message": "Success add data talent",
-		})
-
-		talents = append(talents, body)
-
-		fmt.Println("Hasil tambah data talent: ")
-		fmt.Println(talents)
-	})
-
-	// Mengedit data talent berdasarkan id
-	r.PATCH("/talents/:id", func(ctx *gin.Context) {
-		id := ctx.Param("id")
-		idInt, _ := strconv.Atoi(id)
-
-		var body Talent
-
-		err := ctx.BindJSON(&body)
-
-		if err != nil {
-			ctx.JSON(400, Response{
-				Success: false,
-				Message: fmt.Sprintf("Failed to add talent: %v", err.Error()),
-			})
-			return
-		}
-
-		found := false
-		for i := range talents {
-			if talents[i].Id == idInt {
-				talents[i].Name = body.Name
-				talents[i].Batch = body.Batch
-				talents[i].Phone = body.Phone
-				talents[i].Address = body.Address
+		for i := range users {
+			if users[i].Id == idInt {
+				result = users[i]
 				found = true
 			}
 		}
@@ -186,27 +95,95 @@ func main() {
 		if found {
 			ctx.JSON(200, Response{
 				Success: true,
-				Message: "Talent data successfully updated",
+				Message: fmt.Sprintf("Success get user with id %d", idInt),
+				Data:    result,
 			})
 		} else {
 			ctx.JSON(404, Response{
 				Success: false,
-				Message: "Talent data not found",
+				Message: fmt.Sprintf("User with id %d not found", idInt),
 			})
 		}
-
-		fmt.Println("Hasil edit data talent: ")
-		fmt.Println(talents)
 	})
 
-	r.DELETE("/talents/:id", func(ctx *gin.Context) {
+	// Menambah user baru
+	r.POST("/users", func(ctx *gin.Context) {
+		var body User
+
+		err := ctx.BindJSON(&body)
+
+		if err != nil {
+			ctx.JSON(400, Response{
+				Success: false,
+				Message: fmt.Sprintf("Failed to add user: %v", err.Error()),
+			})
+			return
+		}
+
+		ctx.JSON(200, Response{
+			Success: true,
+			Message: "Success add data user",
+			Data:    body,
+		})
+
+		users = append(users, body)
+	})
+
+	// Mengedit data user berdasarkan id
+	r.PATCH("/users/:id", func(ctx *gin.Context) {
 		id := ctx.Param("id")
 		idInt, _ := strconv.Atoi(id)
 
+		var body User
+
+		err := ctx.BindJSON(&body)
+
+		if err != nil {
+			ctx.JSON(400, Response{
+				Success: false,
+				Message: fmt.Sprintf("Failed to add user: %v", err.Error()),
+			})
+			return
+		}
+
+		var result User
+
 		found := false
-		for i := range talents {
-			if talents[i].Id == idInt {
-				talents = append(talents[:i], talents[i+1:]...)
+		for i := range users {
+			if users[i].Id == idInt {
+				users[i].Username = body.Username
+				users[i].Email = body.Email
+				result = users[i]
+				found = true
+			}
+		}
+
+		if found {
+			ctx.JSON(200, Response{
+				Success: true,
+				Message: fmt.Sprintf("User with id %d successfully updated", idInt),
+				Data:    result,
+			})
+		} else {
+			ctx.JSON(404, Response{
+				Success: false,
+				Message: "User data not found",
+			})
+		}
+	})
+
+	// Menghapus data user by id
+	r.DELETE("/users/:id", func(ctx *gin.Context) {
+		id := ctx.Param("id")
+		idInt, _ := strconv.Atoi(id)
+
+		var result User
+
+		found := false
+		for i := range users {
+			if users[i].Id == idInt {
+				result = users[i]
+				users = append(users[:i], users[i+1:]...)
 				found = true
 				break
 			}
@@ -215,17 +192,15 @@ func main() {
 		if found {
 			ctx.JSON(200, Response{
 				Success: true,
-				Message: "talent data successfully deleted",
+				Message: fmt.Sprintf("User data with id %d successfully deleted", idInt),
+				Data:    result,
 			})
 		} else {
 			ctx.JSON(404, Response{
 				Success: false,
-				Message: "Talent data not found",
+				Message: "User data not found",
 			})
 		}
-
-		fmt.Println("Hasil delete data: ")
-		fmt.Println(talents)
 	})
 
 	// r.GET("/", func(ctx *gin.Context) {

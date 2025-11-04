@@ -1,47 +1,45 @@
-# Get all data talents
-GET /talents HTTP/1.1
+# Get all data users
+GET /users HTTP/1.1
 Host: localhost:8080
 
 ###
 
-# Get data talent by id
+# Get data user by id
 @idAdd = 3
-GET /talents/{{idAdd}} HTTP/1.1
+GET /users/{{idAdd}} HTTP/1.1
 Host: localhost:8080
 
 ###
 
-# Add data talent
-POST /talents HTTP/1.1
+# Add data user
+POST /users HTTP/1.1
 Host: localhost:8080
 Content-Type: application/json
 
 {
   "id": 8,
-  "name": "Andi",
-  "batch": 4,
-  "phone": "12345678",
-  "address": "Demak"
+  "username": "Andi",
+  "email" : "andi@mail.com",
+  "password": "12345678"
 }
 
 ###
 
-# Edit data talent by id
+# Edit data user by id
 @idEdit = 1
-PATCH /talents/{{idEdit}} HTTP/1.1
+PATCH /users/{{idEdit}} HTTP/1.1
 Host: localhost:8080
 Content-Type: application/json
 
 {
-  "name": "Itsna",
-  "batch": 4,
-  "phone": "0895367608879",
-  "address": "Pati"
+  "username": "Budi",
+  "email": "budi@mail.com",
+  "password": "12345563"
 }
 
 ###
 
-# Delete data talent by id
+# Delete data user by id
 @id = 1
-DELETE  /talents/{{id}} HTTP/1.1
+DELETE  /users/{{id}} HTTP/1.1
 Host: localhost:8080
