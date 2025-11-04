@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -126,6 +127,30 @@ func main() {
 				Message: "Talent data not found",
 			})
 		}
+	})
+
+	// Menambah user baru
+	r.POST("/talents", func(ctx *gin.Context) {
+		var body Talent
+
+		err := ctx.BindJSON(&body)
+
+		if err != nil {
+			ctx.JSON(400, ResponseError{
+				Success: false,
+				Message: "Failed to add talent",
+			})
+			return
+		}
+
+		ctx.JSON(200, gin.H{
+			"success": true,
+			"message": "Success add data talent",
+		})
+
+		talents = append(talents, body)
+
+		fmt.Println(talents)
 	})
 
 	// r.GET("/", func(ctx *gin.Context) {

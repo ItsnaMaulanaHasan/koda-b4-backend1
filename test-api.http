@@ -1,6 +1,22 @@
 GET /talents HTTP/1.1
 Host: localhost:8080
 
+###
+
 @id= 1
 GET /talents/{{id}} HTTP/1.1
 Host: localhost:8080
+
+###
+
+POST /talents HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+
+{
+  "id": 8,
+  "name": "Andi",
+  "batch": 4,
+  "phone": "12345678",
+  "address": "Demak"
+}
