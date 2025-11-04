@@ -154,6 +154,7 @@ func main() {
 		fmt.Println(talents)
 	})
 
+	// Mengedit data talent berdasarkan id
 	r.PATCH("/talents/:id", func(ctx *gin.Context) {
 		id := ctx.Param("id")
 		idInt, _ := strconv.Atoi(id)
@@ -194,6 +195,35 @@ func main() {
 		}
 
 		fmt.Println("Hasil edit data talent: ")
+		fmt.Println(talents)
+	})
+
+	r.DELETE("/talents/:id", func(ctx *gin.Context) {
+		id := ctx.Param("id")
+		idInt, _ := strconv.Atoi(id)
+
+		found := false
+		for i := range talents {
+			if talents[i].Id == idInt {
+				talents = append(talents[:i], talents[i+1:]...)
+				found = true
+				break
+			}
+		}
+
+		if found {
+			ctx.JSON(200, Response{
+				Success: true,
+				Message: "talent data successfully deleted",
+			})
+		} else {
+			ctx.JSON(404, Response{
+				Success: false,
+				Message: "Talent data not found",
+			})
+		}
+
+		fmt.Println("Hasil delete data: ")
 		fmt.Println(talents)
 	})
 
