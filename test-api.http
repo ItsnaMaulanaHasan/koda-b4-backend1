@@ -5,8 +5,8 @@ Host: localhost:8080
 ###
 
 # Get data talent by id
-@id = 1
-GET /talents/{{id}} HTTP/1.1
+@idAdd = 3
+GET /talents/{{idAdd}} HTTP/1.1
 Host: localhost:8080
 
 ###
@@ -27,8 +27,8 @@ Content-Type: application/json
 ###
 
 # Edit data talent by id
-@id = 1
-PATCH /talents/{{id}} HTTP/1.1
+@idEdit = 1
+PATCH /talents/{{idEdit}} HTTP/1.1
 Host: localhost:8080
 Content-Type: application/json
 
