@@ -26,7 +26,7 @@ type ResponseGetTalentById struct {
 	Message string `json:"message"`
 	Data    Talent `json:"data"`
 }
-type ResponseError struct {
+type Response struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
 }
@@ -122,7 +122,7 @@ func main() {
 				Data:    result,
 			})
 		} else {
-			ctx.JSON(404, ResponseError{
+			ctx.JSON(404, Response{
 				Success: false,
 				Message: "Talent data not found",
 			})
@@ -136,7 +136,7 @@ func main() {
 		err := ctx.BindJSON(&body)
 
 		if err != nil {
-			ctx.JSON(400, ResponseError{
+			ctx.JSON(400, Response{
 				Success: false,
 				Message: "Failed to add talent",
 			})
@@ -150,6 +150,50 @@ func main() {
 
 		talents = append(talents, body)
 
+		fmt.Println("Hasil tambah data talent: ")
+		fmt.Println(talents)
+	})
+
+	r.PATCH("/talents/:id", func(ctx *gin.Context) {
+		id := ctx.Param("id")
+		idInt, _ := strconv.Atoi(id)
+
+		var body Talent
+
+		err := ctx.BindJSON(&body)
+
+		if err != nil {
+			ctx.JSON(400, Response{
+				Success: false,
+				Message: "Failed to update talent",
+			})
+			return
+		}
+
+		found := false
+		for i := range talents {
+			if talents[i].Id == idInt {
+				talents[i].Name = body.Name
+				talents[i].Batch = body.Batch
+				talents[i].Phone = body.Phone
+				talents[i].Address = body.Address
+				found = true
+			}
+		}
+
+		if found {
+			ctx.JSON(200, Response{
+				Success: true,
+				Message: "Talent data successfully updated",
+			})
+		} else {
+			ctx.JSON(404, Response{
+				Success: false,
+				Message: "Talent data not found",
+			})
+		}
+
+		fmt.Println("Hasil edit data talent: ")
 		fmt.Println(talents)
 	})
 
