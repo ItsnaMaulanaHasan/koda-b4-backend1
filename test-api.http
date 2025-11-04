@@ -1,2 +1,6 @@
 GET /talents HTTP/1.1
 Host: localhost:8080
+
+@id= 1
+GET /talents/{{id}} HTTP/1.1
+Host: localhost:8080
