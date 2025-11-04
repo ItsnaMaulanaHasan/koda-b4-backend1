@@ -7,9 +7,22 @@ import (
 )
 
 func SetUpRoutes(r *gin.Engine) {
-	r.GET("/users", controllers.DataUsers.GetAllUser)
-	r.GET("/users/:id", controllers.DataUsers.GetUserById)
-	r.POST("/users", controllers.DataUsers.CreateUser)
-	r.PATCH("/users/:id", controllers.DataUsers.UpdateUser)
-	r.DELETE("/users/:id", controllers.DataUsers.DeleteUser)
+
+	userController := controllers.NewUserController()
+	authController := controllers.NewAuthController(userController)
+
+	users := r.Group("/users")
+	{
+		users.GET("", userController.GetAllUser)
+		users.GET("/:id", userController.GetUserById)
+		users.PATCH("/:id", userController.UpdateUser)
+		users.DELETE("/:id", userController.DeleteUser)
+	}
+
+	auth := r.Group("/auth")
+	{
+		auth.POST("/register", authController.Register)
+		auth.POST("/login", authController.Login)
+	}
+
 }
