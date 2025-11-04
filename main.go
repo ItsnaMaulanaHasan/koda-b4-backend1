@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,10 +14,20 @@ type Talent struct {
 	Address string
 }
 
-type Response struct {
+type ResponseGetAllTalents struct {
 	Success bool     `json:"success"`
 	Message string   `json:"message"`
 	Data    []Talent `json:"data"`
+}
+
+type ResponseGetTalentById struct {
+	Success bool   `json:"success"`
+	Message string `json:"message"`
+	Data    Talent `json:"data"`
+}
+type ResponseError struct {
+	Success bool   `json:"success"`
+	Message string `json:"message"`
 }
 
 // type Query struct {
@@ -80,7 +92,7 @@ func main() {
 
 	// Mendapatkan semua data talent
 	r.GET("/talents", func(ctx *gin.Context) {
-		ctx.JSON(200, Response{
+		ctx.JSON(200, ResponseGetAllTalents{
 			Success: true,
 			Message: "Success get data talents",
 			Data:    talents,
@@ -88,6 +100,33 @@ func main() {
 	})
 
 	// Mendapatkan data talent berdasarkan id
+	r.GET("/talents/:id", func(ctx *gin.Context) {
+		id := ctx.Param("id")
+		idInt, _ := strconv.Atoi(id)
+
+		var result Talent
+
+		found := false
+		for i := range talents {
+			if talents[i].Id == idInt {
+				result = talents[i]
+				found = true
+			}
+		}
+
+		if found {
+			ctx.JSON(200, ResponseGetTalentById{
+				Success: true,
+				Message: "Talent data found",
+				Data:    result,
+			})
+		} else {
+			ctx.JSON(404, ResponseError{
+				Success: false,
+				Message: "Talent data not found",
+			})
+		}
+	})
 
 	// r.GET("/", func(ctx *gin.Context) {
 	// 	// ctx.Data(200, "application/json", []byte("{\"success\": true, \"message\": \"OK\"}"))
