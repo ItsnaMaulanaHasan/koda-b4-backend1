@@ -139,7 +139,7 @@ func main() {
 		if err != nil {
 			ctx.JSON(400, Response{
 				Success: false,
-				Message: "Failed to add talent",
+				Message: fmt.Sprintf("Failed to add talent: %e", err),
 			})
 			return
 		}
