@@ -13,16 +13,18 @@ type UserController struct {
 	users []models.User
 }
 
-var DataUsers = &UserController{
-	users: []models.User{
-		{Id: 1, Username: "Itsna", Email: "itsna@mail.com", Password: "12345"},
-		{Id: 2, Username: "Federus", Email: "federus@mail.com", Password: "12345"},
-		{Id: 3, Username: "Ari", Email: "ari@mail.com", Password: "12345"},
-		{Id: 4, Username: "Yoga", Email: "yoga@mail.com", Password: "12345"},
-		{Id: 5, Username: "Fiki", Email: "fiki@mail.com", Password: "12345"},
-		{Id: 6, Username: "Sidik", Email: "sidik@mail.com", Password: "12345"},
-		{Id: 7, Username: "Anggi", Email: "anggi@mail.com", Password: "12345"},
-	},
+func NewUserController() *UserController {
+	return &UserController{
+		users: []models.User{
+			{Id: 1, Username: "Itsna", Email: "itsna@mail.com", Password: "123456789"},
+			{Id: 2, Username: "Federus", Email: "federus@mail.com", Password: "123456789"},
+			{Id: 3, Username: "Ari", Email: "ari@mail.com", Password: "123456789"},
+			{Id: 4, Username: "Yoga", Email: "yoga@mail.com", Password: "123456789"},
+			{Id: 5, Username: "Fiki", Email: "fiki@mail.com", Password: "123456789"},
+			{Id: 6, Username: "Sidik", Email: "sidik@mail.com", Password: "123456789"},
+			{Id: 7, Username: "Anggi", Email: "anggi@mail.com", Password: "123456789"},
+		},
+	}
 }
 
 func (uc *UserController) GetAllUser(ctx *gin.Context) {
@@ -43,20 +45,18 @@ func (uc *UserController) GetUserById(ctx *gin.Context) {
 		return
 	}
 
-	var result models.User
-	found := false
+	var foundUser *models.User
 	for i := range uc.users {
 		if uc.users[i].Id == id {
-			result = uc.users[i]
-			found = true
+			foundUser = &uc.users[i]
 		}
 	}
 
-	if found {
+	if foundUser != nil {
 		ctx.JSON(http.StatusOK, models.Response{
 			Success: true,
 			Message: fmt.Sprintf("Success get user with id %d", id),
-			Data:    result,
+			Data:    foundUser,
 		})
 	} else {
 		ctx.JSON(http.StatusNotFound, models.Response{
@@ -109,22 +109,20 @@ func (uc *UserController) UpdateUser(ctx *gin.Context) {
 		return
 	}
 
-	var result models.User
-	found := false
+	var foundUser *models.User
 	for i := range uc.users {
 		if uc.users[i].Id == id {
 			uc.users[i].Username = body.Username
 			uc.users[i].Email = body.Email
-			result = uc.users[i]
-			found = true
+			foundUser = &uc.users[i]
 		}
 	}
 
-	if found {
+	if foundUser != nil {
 		ctx.JSON(http.StatusOK, models.Response{
 			Success: true,
 			Message: fmt.Sprintf("User with id %d successfully updated", id),
-			Data:    result,
+			Data:    foundUser,
 		})
 	} else {
 		ctx.JSON(http.StatusNotFound, models.Response{
@@ -144,22 +142,20 @@ func (uc *UserController) DeleteUser(ctx *gin.Context) {
 		return
 	}
 
-	var result models.User
-	found := false
+	var foundUser *models.User
 	for i := range uc.users {
 		if uc.users[i].Id == id {
-			result = uc.users[i]
+			foundUser = &uc.users[i]
 			uc.users = append(uc.users[:i], uc.users[i+1:]...)
-			found = true
 			break
 		}
 	}
 
-	if found {
+	if foundUser != nil {
 		ctx.JSON(http.StatusOK, models.Response{
 			Success: true,
 			Message: fmt.Sprintf("User data with id %d successfully deleted", id),
-			Data:    result,
+			Data:    foundUser,
 		})
 	} else {
 		ctx.JSON(http.StatusNotFound, models.Response{
