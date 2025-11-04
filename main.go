@@ -8,9 +8,9 @@ import (
 )
 
 type Talent struct {
-	Id      int
-	Name    string
-	Batch   int
+	Id      int    `binding:"required"`
+	Name    string `binding:"required, max=30"`
+	Batch   int    `binding:"required"`
 	Phone   string
 	Address string
 }
@@ -26,6 +26,7 @@ type ResponseGetTalentById struct {
 	Message string `json:"message"`
 	Data    Talent `json:"data"`
 }
+
 type Response struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
