@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/matthewhartstonge/argon2"
 )
 
 type UserController struct {
@@ -92,8 +91,7 @@ func (uc *UserController) CreateUser(ctx *gin.Context) {
 
 	body.Id = len(uc.users) + 1
 
-	argon := argon2.DefaultConfig()
-	hashPassword, err := argon.HashEncoded([]byte(body.Password))
+	hashPassword, err := hashPassword(body.Password)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: false,

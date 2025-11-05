@@ -52,8 +52,7 @@ func (ac *AuthController) Register(ctx *gin.Context) {
 
 	body.Id = len(ac.userController.users) + 1
 
-	argon := argon2.DefaultConfig()
-	hashPassword, err := argon.HashEncoded([]byte(body.Password))
+	hashPassword, err := hashPassword(body.Password)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
@@ -152,8 +151,7 @@ func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
 		return
 	}
 
-	argon := argon2.DefaultConfig()
-	hashPassword, err := argon.HashEncoded([]byte(newPassword))
+	hashPassword, err := hashPassword(newPassword)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
