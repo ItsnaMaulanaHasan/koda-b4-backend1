@@ -48,12 +48,7 @@ func (ac *AuthController) Register(ctx *gin.Context) {
 		}
 	}
 
-	newId := 1
-	if len(ac.userController.users) > 0 {
-		lastUser := ac.userController.users[len(ac.userController.users)-1]
-		newId = lastUser.Id + 1
-	}
-	body.Id = newId
+	body.Id = len(ac.userController.users) + 1
 
 	ac.userController.users = append(ac.userController.users, body)
 
