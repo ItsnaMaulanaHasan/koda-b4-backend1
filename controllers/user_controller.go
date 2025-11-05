@@ -120,8 +120,11 @@ func (uc *UserController) UpdateUser(ctx *gin.Context) {
 		return
 	}
 
-	var body models.User
-	err = ctx.ShouldBindBodyWithJSON(&body)
+	var userUpdate struct {
+		Username string `json:"username" binding:"required,min=3,max=20"`
+		Email    string `json:"email" binding:"required,email"`
+	}
+	err = ctx.ShouldBindBodyWithJSON(&userUpdate)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
@@ -134,8 +137,8 @@ func (uc *UserController) UpdateUser(ctx *gin.Context) {
 	var foundUser *models.User
 	for i := range uc.users {
 		if uc.users[i].Id == id {
-			uc.users[i].Username = body.Username
-			uc.users[i].Email = body.Email
+			uc.users[i].Username = userUpdate.Username
+			uc.users[i].Email = userUpdate.Email
 			foundUser = &uc.users[i]
 		}
 	}
