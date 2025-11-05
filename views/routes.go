@@ -24,7 +24,7 @@ func SetUpRoutes(r *gin.Engine) {
 	{
 		auth.POST("/register", authController.Register)
 		auth.POST("/login", authController.Login)
-		auth.PATCH("/forgot-password", authController.ForgotPassword)
+		auth.PATCH("/forgot-password/:id", authController.ForgotPassword)
 	}
 
 }

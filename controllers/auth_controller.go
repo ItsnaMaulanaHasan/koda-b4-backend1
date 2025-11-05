@@ -3,6 +3,7 @@ package controllers
 import (
 	"gin-practice/models"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/matthewhartstonge/argon2"
@@ -131,10 +132,18 @@ func (ac *AuthController) Login(ctx *gin.Context) {
 }
 
 func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
-	email := ctx.Param("email")
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, models.Response{
+			Success: true,
+			Message: err.Error(),
+		})
+		return
+	}
+
 	var newPassword string
 
-	err := ctx.ShouldBindBodyWithJSON(&newPassword)
+	err = ctx.ShouldBindBodyWithJSON(&newPassword)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: true,
@@ -155,7 +164,7 @@ func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
 
 	var foundUser *models.User
 	for i := range ac.userController.users {
-		if ac.userController.users[i].Email == email {
+		if ac.userController.users[i].Id == id {
 			ac.userController.users[i].Password = string(hashPassword)
 			foundUser = &ac.userController.users[i]
 		}
