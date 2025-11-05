@@ -11,20 +11,6 @@ Host: localhost:8080
 
 ###
 
-# Add data user
-POST /users HTTP/1.1
-Host: localhost:8080
-Content-Type: application/json
-
-{
-  "id": 8,
-  "username": "Andi",
-  "email" : "andi@mail.com",
-  "password": "12345678"
-}
-
-###
-
 # Edit data user by id
 @idEdit = 1
 PATCH /users/{{idEdit}} HTTP/1.1
