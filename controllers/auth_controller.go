@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/matthewhartstonge/argon2"
 )
 
 type AuthController struct {
@@ -50,12 +51,24 @@ func (ac *AuthController) Register(ctx *gin.Context) {
 
 	body.Id = len(ac.userController.users) + 1
 
+	argon := argon2.DefaultConfig()
+	hashPassword, err := argon.HashEncoded([]byte(body.Password))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, models.Response{
+			Success: false,
+			Message: "Hash password failed",
+		})
+		return
+	}
+
+	body.Password = string(hashPassword)
 	ac.userController.users = append(ac.userController.users, body)
 
 	responseData := models.User{
 		Id:       body.Id,
 		Username: body.Username,
 		Email:    body.Email,
+		Password: body.Password,
 	}
 
 	ctx.JSON(http.StatusCreated, models.Response{
@@ -83,9 +96,16 @@ func (ac *AuthController) Login(ctx *gin.Context) {
 	var foundUser *models.User
 	for i := range ac.userController.users {
 		if ac.userController.users[i].Email == loginData.Email {
-			if ac.userController.users[i].Password == loginData.Password {
+			isPasswordValid, err := argon2.VerifyEncoded([]byte(loginData.Password), []byte(ac.userController.users[i].Password))
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, models.Response{
+					Success: false,
+					Message: err.Error(),
+				})
+			}
+
+			if isPasswordValid {
 				foundUser = &ac.userController.users[i]
-				break
 			} else {
 				ctx.JSON(http.StatusUnauthorized, models.Response{
 					Success: false,
