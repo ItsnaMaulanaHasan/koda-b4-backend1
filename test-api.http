@@ -1,31 +1,42 @@
-# Get all data users
+# Get all users
 GET /users HTTP/1.1
 Host: localhost:8080
 
 ###
 
-# Get data user by id
-@idAdd = 3
+# Get user by id
+@idAdd = 1
 GET /users/{{idAdd}} HTTP/1.1
 Host: localhost:8080
 
 ###
 
-# Edit data user by id
+# Create user
+POST /users HTTP/1.1
+Host: localhost:8080
+
+{
+  "username": "itsna",
+  "email": "itsna@mail.com",
+  "password": "12345678"
+}
+
+###
+
+# Edit user by id
 @idEdit = 1
 PATCH /users/{{idEdit}} HTTP/1.1
 Host: localhost:8080
 Content-Type: application/json
 
 {
-  "username": "Budi",
-  "email": "budi@mail.com",
-  "password": "12345563"
+  "username": "itsna2",
+  "email": "itsna@mail.com",
 }
 
 ###
 
-# Delete data user by id
+# Delete user by id
 @id = 1
 DELETE  /users/{{id}} HTTP/1.1
 Host: localhost:8080
@@ -38,9 +49,9 @@ Host: localhost:8080
 Content-Type: application/json
 
 {
-  "username": "Wisnu",
-  "email": "wisnu@mail.com",
-  "password": "123456"
+  "username": "itsna",
+  "email": "itsna@mail.com",
+  "password": "12345678"
 }
 
 ###
@@ -53,4 +64,16 @@ Content-Type: application/json
 {
   "email": "itsna@mail.com",
   "password": "123456789"
+}
+
+###
+
+# Forgot password
+@idForgot = 1
+PATCH  /auth/forgot-password/{{{{idForgot}}}} HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+
+{
+  "newPassword": "03062003"
 }
