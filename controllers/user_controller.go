@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/matthewhartstonge/argon2"
 )
 
 type UserController struct {
@@ -32,7 +33,7 @@ func (uc *UserController) GetUserById(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
-			Message: "Invliad Id format",
+			Message: "Invalid Id format",
 		})
 		return
 	}
@@ -60,9 +61,7 @@ func (uc *UserController) GetUserById(ctx *gin.Context) {
 
 func (uc *UserController) CreateUser(ctx *gin.Context) {
 	var body models.User
-
-	err := ctx.ShouldBind(&body)
-
+	err := ctx.ShouldBindBodyWithJSON(&body)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: true,
@@ -71,11 +70,44 @@ func (uc *UserController) CreateUser(ctx *gin.Context) {
 		return
 	}
 
+	for _, user := range uc.users {
+		if user.Email == body.Email {
+			ctx.JSON(http.StatusConflict, models.Response{
+				Success: false,
+				Message: "Email already registered",
+			})
+			return
+		}
+	}
+
+	for _, user := range uc.users {
+		if user.Username == body.Username {
+			ctx.JSON(http.StatusConflict, models.Response{
+				Success: false,
+				Message: "Username already taken",
+			})
+			return
+		}
+	}
+
+	body.Id = len(uc.users) + 1
+
+	argon := argon2.DefaultConfig()
+	hashPassword, err := argon.HashEncoded([]byte(body.Password))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, models.Response{
+			Success: false,
+			Message: "Hash password failed",
+		})
+		return
+	}
+
+	body.Password = string(hashPassword)
 	uc.users = append(uc.users, body)
 
 	ctx.JSON(http.StatusOK, models.Response{
 		Success: true,
-		Message: "Success add data user",
+		Message: "Create user succesfully",
 		Data:    body,
 	})
 }
@@ -85,13 +117,13 @@ func (uc *UserController) UpdateUser(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
-			Message: "Invliad Id format",
+			Message: "Invalid Id format",
 		})
 		return
 	}
 
 	var body models.User
-	err = ctx.ShouldBind(&body)
+	err = ctx.ShouldBindBodyWithJSON(&body)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
@@ -129,7 +161,7 @@ func (uc *UserController) DeleteUser(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
-			Message: "Invliad Id format",
+			Message: "Invalid Id format",
 		})
 		return
 	}
