@@ -31,7 +31,7 @@ Content-Type: application/json
 
 {
   "username": "itsna2",
-  "email": "itsna@mail.com",
+  "email": "itsna@mail.com"
 }
 
 ###
@@ -49,8 +49,8 @@ Host: localhost:8080
 Content-Type: application/json
 
 {
-  "username": "itsna",
-  "email": "itsna@mail.com",
+  "username": "Budiman",
+  "email": "budiman@mail.com",
   "password": "12345678"
 }
 
@@ -63,14 +63,14 @@ Content-Type: application/json
 
 {
   "email": "itsna@mail.com",
-  "password": "123456789"
+  "password": "12345678"
 }
 
 ###
 
 # Forgot password
 @idForgot = 1
-PATCH  /auth/forgot-password/{{{{idForgot}}}} HTTP/1.1
+PATCH  /auth/forgot-password/{{idForgot}} HTTP/1.1
 Host: localhost:8080
 Content-Type: application/json
 
