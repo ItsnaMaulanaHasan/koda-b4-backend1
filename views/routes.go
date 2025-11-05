@@ -15,6 +15,7 @@ func SetUpRoutes(r *gin.Engine) {
 	{
 		users.GET("", userController.GetAllUser)
 		users.GET("/:id", userController.GetUserById)
+		users.POST("", userController.CreateUser)
 		users.PATCH("/:id", userController.UpdateUser)
 		users.DELETE("/:id", userController.DeleteUser)
 	}
@@ -23,6 +24,7 @@ func SetUpRoutes(r *gin.Engine) {
 	{
 		auth.POST("/register", authController.Register)
 		auth.POST("/login", authController.Login)
+		auth.PATCH("/forgot-password", authController.ForgotPassword)
 	}
 
 }
