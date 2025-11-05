@@ -15,15 +15,7 @@ type UserController struct {
 
 func NewUserController() *UserController {
 	return &UserController{
-		users: []models.User{
-			{Id: 1, Username: "Itsna", Email: "itsna@mail.com", Password: "123456789"},
-			{Id: 2, Username: "Federus", Email: "federus@mail.com", Password: "123456789"},
-			{Id: 3, Username: "Ari", Email: "ari@mail.com", Password: "123456789"},
-			{Id: 4, Username: "Yoga", Email: "yoga@mail.com", Password: "123456789"},
-			{Id: 5, Username: "Fiki", Email: "fiki@mail.com", Password: "123456789"},
-			{Id: 6, Username: "Sidik", Email: "sidik@mail.com", Password: "123456789"},
-			{Id: 7, Username: "Anggi", Email: "anggi@mail.com", Password: "123456789"},
-		},
+		users: []models.User{},
 	}
 }
 
