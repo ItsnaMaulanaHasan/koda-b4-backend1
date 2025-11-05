@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"gin-practice/lib"
 	"gin-practice/models"
 	"net/http"
 	"strconv"
@@ -91,7 +92,7 @@ func (uc *UserController) CreateUser(ctx *gin.Context) {
 
 	body.Id = len(uc.users) + 1
 
-	hashPassword, err := hashPassword(body.Password)
+	hashPassword, err := lib.HashPassword(body.Password)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: false,

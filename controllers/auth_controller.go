@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"gin-practice/lib"
 	"gin-practice/models"
 	"net/http"
 	"strconv"
@@ -52,7 +53,7 @@ func (ac *AuthController) Register(ctx *gin.Context) {
 
 	body.Id = len(ac.userController.users) + 1
 
-	hashPassword, err := hashPassword(body.Password)
+	hashPassword, err := lib.HashPassword(body.Password)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
@@ -153,7 +154,7 @@ func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
 		return
 	}
 
-	hashPassword, err := hashPassword(newPassword.NewPassword)
+	hashPassword, err := lib.HashPassword(newPassword.NewPassword)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: false,

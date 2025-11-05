@@ -1,8 +1,8 @@
-package controllers
+package lib
 
 import "github.com/matthewhartstonge/argon2"
 
-func hashPassword(str string) ([]byte, error) {
+func HashPassword(str string) ([]byte, error) {
 	argon := argon2.DefaultConfig()
 	hashPassword, err := argon.HashEncoded([]byte(str))
 	return hashPassword, err
