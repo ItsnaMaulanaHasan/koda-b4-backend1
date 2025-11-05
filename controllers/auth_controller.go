@@ -73,8 +73,8 @@ func (ac *AuthController) Register(ctx *gin.Context) {
 
 func (ac *AuthController) Login(ctx *gin.Context) {
 	var loginData struct {
-		Email    string `json:"email" form:"email" xml:"email" binding:"required,email"`
-		Password string `json:"password" form:"password" xml:"password" binding:"required,min=6"`
+		Email    string `json:"email" binding:"required,email"`
+		Password string `json:"password" binding:"required,min=6"`
 	}
 
 	err := ctx.ShouldBindBodyWithJSON(&loginData)
@@ -140,7 +140,9 @@ func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
 		return
 	}
 
-	var newPassword string
+	var newPassword struct {
+		NewPassword string `json:"newPassword" binding:"required,min=6"`
+	}
 
 	err = ctx.ShouldBindBodyWithJSON(&newPassword)
 	if err != nil {
@@ -151,7 +153,7 @@ func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
 		return
 	}
 
-	hashPassword, err := hashPassword(newPassword)
+	hashPassword, err := hashPassword(newPassword.NewPassword)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
