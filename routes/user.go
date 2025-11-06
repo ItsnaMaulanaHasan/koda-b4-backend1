@@ -2,12 +2,13 @@ package routes
 
 import (
 	"gin-practice/controllers"
+	"gin-practice/middlewares"
 
 	"github.com/gin-gonic/gin"
 )
 
 func SetupUserRoutes(r *gin.Engine, userController *controllers.UserController) {
-	users := r.Group("/users")
+	users := r.Group("/users", middlewares.Auth())
 	{
 		users.GET("", userController.GetAllUser)
 		users.GET("/:id", userController.GetUserById)

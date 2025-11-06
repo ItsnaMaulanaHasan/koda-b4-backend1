@@ -51,7 +51,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/models.Response"
+                                    "$ref": "#/definitions/lib.Response"
                                 },
                                 {
                                     "type": "object",
@@ -67,13 +67,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid ]request body or hashing password failed",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "$ref": "#/definitions/lib.Response"
                         }
                     },
                     "404": {
                         "description": "User not found",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "$ref": "#/definitions/lib.Response"
                         }
                     }
                 }
@@ -115,7 +115,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/models.Response"
+                                    "$ref": "#/definitions/lib.Response"
                                 },
                                 {
                                     "type": "object",
@@ -131,13 +131,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid request body or hash password failed",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "$ref": "#/definitions/lib.Response"
                         }
                     },
                     "401": {
                         "description": "Invalid email or password",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "$ref": "#/definitions/lib.Response"
                         }
                     }
                 }
@@ -189,7 +189,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/models.Response"
+                                    "$ref": "#/definitions/lib.Response"
                                 },
                                 {
                                     "type": "object",
@@ -205,13 +205,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid request body or hash password failed",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "$ref": "#/definitions/lib.Response"
                         }
                     },
                     "409": {
                         "description": "Email or username already exists",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "$ref": "#/definitions/lib.Response"
                         }
                     }
                 }
@@ -233,7 +233,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/models.Response"
+                                    "$ref": "#/definitions/lib.Response"
                                 },
                                 {
                                     "type": "object",
@@ -296,7 +296,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/models.Response"
+                                    "$ref": "#/definitions/lib.Response"
                                 },
                                 {
                                     "type": "object",
@@ -312,13 +312,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid request body or hash password failed",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "$ref": "#/definitions/lib.Response"
                         }
                     },
                     "409": {
                         "description": "Email or username already exists",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "$ref": "#/definitions/lib.Response"
                         }
                     }
                 }
@@ -352,7 +352,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/models.Response"
+                                    "$ref": "#/definitions/lib.Response"
                                 },
                                 {
                                     "type": "object",
@@ -368,13 +368,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid Id format",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "$ref": "#/definitions/lib.Response"
                         }
                     },
                     "404": {
                         "description": "User not found",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "$ref": "#/definitions/lib.Response"
                         }
                     }
                 }
@@ -406,7 +406,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/models.Response"
+                                    "$ref": "#/definitions/lib.Response"
                                 },
                                 {
                                     "type": "object",
@@ -422,13 +422,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid Id format",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "$ref": "#/definitions/lib.Response"
                         }
                     },
                     "404": {
                         "description": "User not found",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "$ref": "#/definitions/lib.Response"
                         }
                     }
                 }
@@ -474,7 +474,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/models.Response"
+                                    "$ref": "#/definitions/lib.Response"
                                 },
                                 {
                                     "type": "object",
@@ -490,13 +490,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid Id format or request body",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "$ref": "#/definitions/lib.Response"
                         }
                     },
                     "404": {
                         "description": "User not found",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "$ref": "#/definitions/lib.Response"
                         }
                     }
                 }
@@ -535,25 +535,25 @@ const docTemplate = `{
                     "200": {
                         "description": "Successfully uploaded photo profile",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "$ref": "#/definitions/lib.Response"
                         }
                     },
                     "400": {
                         "description": "Bad request (invalid Id, wrong file type, or file too large)",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "$ref": "#/definitions/lib.Response"
                         }
                     },
                     "404": {
                         "description": "User not found",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "$ref": "#/definitions/lib.Response"
                         }
                     },
                     "500": {
                         "description": "Failed to save file",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "$ref": "#/definitions/lib.Response"
                         }
                     }
                 }
@@ -561,7 +561,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.Response": {
+        "lib.Response": {
             "type": "object",
             "properties": {
                 "data": {},
