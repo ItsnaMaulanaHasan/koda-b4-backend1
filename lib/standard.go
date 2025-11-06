@@ -1,4 +1,4 @@
-package models
+package lib
 
 type Response struct {
 	Success bool   `json:"success" example:"true"`
