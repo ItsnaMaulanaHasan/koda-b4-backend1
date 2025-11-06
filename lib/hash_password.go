@@ -2,8 +2,13 @@ package lib
 
 import "github.com/matthewhartstonge/argon2"
 
-func HashPassword(str string) ([]byte, error) {
-	argon := argon2.DefaultConfig()
-	hashPassword, err := argon.HashEncoded([]byte(str))
-	return hashPassword, err
+func HashPassword(password string) (string, error) {
+	config := argon2.DefaultConfig()
+
+	hash, err := config.Hash([]byte(password), nil)
+	if err != nil {
+		return "", err
+	}
+
+	return string(hash.Encode()), nil
 }

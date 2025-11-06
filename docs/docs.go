@@ -65,7 +65,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid Id format or request body",
+                        "description": "Invalid ]request body or hashing password failed",
                         "schema": {
                             "$ref": "#/definitions/models.Response"
                         }

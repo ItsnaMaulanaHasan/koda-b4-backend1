@@ -74,7 +74,7 @@ func (ac *AuthController) Register(ctx *gin.Context) {
 		return
 	}
 
-	body.Password = string(hashPassword)
+	body.Password = hashPassword
 	ac.userController.users = append(ac.userController.users, body)
 
 	body.Password = ""
@@ -122,6 +122,7 @@ func (ac *AuthController) Login(ctx *gin.Context) {
 					Success: false,
 					Message: err.Error(),
 				})
+				return
 			}
 
 			if isPasswordValid {
@@ -164,9 +165,9 @@ func (ac *AuthController) Login(ctx *gin.Context) {
 // @Accept       x-www-form-urlencoded
 // @Produce      json
 // @Param        id           path      int  true  "User ID"
-// @Param        newPassword  formData  string  true  "Input new password" format(password)
+// @Param        newPassword  formData  string  true  "Input new password"  format(password)
 // @Success      200          {object}  models.Response{data=models.User}  "User updated successfully"
-// @Failure      400          {object}  models.Response  "Invalid Id format or request body"
+// @Failure      400          {object}  models.Response  "Invalid ]request body or hashing password failed"
 // @Failure      404          {object}  models.Response  "User not found"
 // @Router       /auth/forgot-password/{id} [patch]
 func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
@@ -186,7 +187,7 @@ func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
 	err = ctx.ShouldBindWith(&newPassword, binding.Form)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
-			Success: true,
+			Success: false,
 			Message: err.Error(),
 		})
 		return
@@ -204,16 +205,23 @@ func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
 	var foundUser *models.User
 	for i := range ac.userController.users {
 		if ac.userController.users[i].Id == id {
-			ac.userController.users[i].Password = string(hashPassword)
+			ac.userController.users[i].Password = hashPassword
 			foundUser = &ac.userController.users[i]
+			break
 		}
 	}
 
 	if foundUser != nil {
+		foundUser.Password = ""
 		ctx.JSON(http.StatusOK, models.Response{
 			Success: true,
 			Message: "Password success updates",
 			Data:    foundUser,
+		})
+	} else {
+		ctx.JSON(http.StatusNotFound, models.Response{
+			Success: false,
+			Message: "User not found",
 		})
 	}
 }
