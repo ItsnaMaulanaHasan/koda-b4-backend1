@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/matthewhartstonge/argon2"
 )
 
@@ -20,9 +21,20 @@ func NewAuthController(uc *UserController) *AuthController {
 	}
 }
 
+// Register godoc
+// @Summary      Create new user
+// @Description  Create a new user with a unique username and email
+// @Tags         auth
+// @Accept       x-www-form-urlencoded
+// @Produce      json
+// @Param        user      formData  models.User true "User registration data"
+// @Success      200       {object}  models.Response{data=models.User}  "User created successfully"
+// @Failure      400       {object}  models.Response  "Invalid request body or hash password failed"
+// @Failure      409       {object}  models.Response  "Email or username already exists"
+// @Router       /auth/register [post]
 func (ac *AuthController) Register(ctx *gin.Context) {
 	var body models.User
-	err := ctx.ShouldBindBodyWithJSON(&body)
+	err := ctx.ShouldBindWith(&body, binding.Form)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
@@ -65,6 +77,8 @@ func (ac *AuthController) Register(ctx *gin.Context) {
 	body.Password = string(hashPassword)
 	ac.userController.users = append(ac.userController.users, body)
 
+	body.Password = ""
+
 	ctx.JSON(http.StatusCreated, models.Response{
 		Success: true,
 		Message: "User registered successfully",
@@ -72,13 +86,25 @@ func (ac *AuthController) Register(ctx *gin.Context) {
 	})
 }
 
+// Login godoc
+// @Summary      Login user
+// @Description  Log in with existing email and username data
+// @Tags         auth
+// @Accept       x-www-form-urlencoded
+// @Produce      json
+// @Param        email     formData  string  true  "Email address"
+// @Param        password  formData  string  true  "Input Password" format(password)
+// @Success      200       {object}  models.Response{data=models.User}  "User updated successfully"
+// @Failure      400       {object}  models.Response  "Invalid Id format or request body"
+// @Failure      404       {object}  models.Response  "User not found"
+// @Router       /auth/login [post]
 func (ac *AuthController) Login(ctx *gin.Context) {
 	var loginData struct {
-		Email    string `json:"email" binding:"required,email"`
-		Password string `json:"password" binding:"required,min=6"`
+		Email    string `form:"email" binding:"required,email"`
+		Password string `form:"password" binding:"required,min=6"`
 	}
 
-	err := ctx.ShouldBindBodyWithJSON(&loginData)
+	err := ctx.ShouldBindWith(&loginData, binding.Form)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
@@ -145,7 +171,7 @@ func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
 		NewPassword string `json:"newPassword" binding:"required,min=6"`
 	}
 
-	err = ctx.ShouldBindBodyWithJSON(&newPassword)
+	err = ctx.ShouldBindWith(&newPassword, binding.Form)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: true,

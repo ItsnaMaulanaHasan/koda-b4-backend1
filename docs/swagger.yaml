@@ -37,6 +37,94 @@ info:
   title: API Documentation
   version: "1.0"
 paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Log in with existing email and username data
+      parameters:
+      - description: Email address
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: Input Password
+        format: password
+        in: formData
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User updated successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.User'
+              type: object
+        "400":
+          description: Invalid Id format or request body
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Login user
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Create a new user with a unique username and email
+      parameters:
+      - example: koda@mail.com
+        in: formData
+        name: email
+        required: true
+        type: string
+      - example: koda123
+        format: password
+        in: formData
+        minLength: 6
+        name: password
+        required: true
+        type: string
+      - example: koda
+        in: formData
+        maxLength: 20
+        minLength: 3
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User created successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.User'
+              type: object
+        "400":
+          description: Invalid request body or hash password failed
+          schema:
+            $ref: '#/definitions/models.Response'
+        "409":
+          description: Email or username already exists
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Create new user
+      tags:
+      - auth
   /users:
     get:
       description: Retrieving all user data
