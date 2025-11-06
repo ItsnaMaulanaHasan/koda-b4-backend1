@@ -94,7 +94,7 @@ func (ac *AuthController) Register(ctx *gin.Context) {
 // @Produce      json
 // @Param        email     formData  string  true  "Email address"
 // @Param        password  formData  string  true  "Input Password" format(password)
-// @Success      200       {object}  lib.Response{data=models.User}  "User login Successfully"
+// @Success      200       {object}  object{token=string}  "User login Successfully"
 // @Failure      400       {object}  lib.Response  "Invalid request body or hash password failed"
 // @Failure      401       {object}  lib.Response  "Invalid email or password"
 // @Router       /auth/login [post]
@@ -145,16 +145,21 @@ func (ac *AuthController) Login(ctx *gin.Context) {
 		return
 	}
 
-	responseData := models.User{
-		Id:       foundUser.Id,
-		Username: foundUser.Username,
-		Email:    foundUser.Email,
+	jwtToken, err := lib.GenerateToken(foundUser.Id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, lib.Response{
+			Success: false,
+			Message: "Failed to generate token",
+		})
+		return
 	}
 
 	ctx.JSON(http.StatusOK, lib.Response{
 		Success: true,
 		Message: "User login Successfully",
-		Data:    responseData,
+		Data: gin.H{
+			"token": jwtToken,
+		},
 	})
 }
 
