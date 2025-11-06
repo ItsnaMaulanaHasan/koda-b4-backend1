@@ -1,4 +1,4 @@
-package views
+package routes
 
 import (
 	"gin-practice/controllers"
