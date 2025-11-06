@@ -113,19 +113,12 @@ const docTemplate = `{
                     "200": {
                         "description": "User login Successfully",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/lib.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/models.User"
-                                        }
-                                    }
+                            "type": "object",
+                            "properties": {
+                                "token": {
+                                    "type": "string"
                                 }
-                            ]
+                            }
                         }
                     },
                     "400": {
@@ -219,7 +212,12 @@ const docTemplate = `{
         },
         "/users": {
             "get": {
-                "description": "Retrieving all user data",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieving all user data with pagination support",
                 "produces": [
                     "application/json"
                 ],
@@ -227,31 +225,85 @@ const docTemplate = `{
                     "users"
                 ],
                 "summary": "Get all users",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003ctoken\u003e",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Success get all users",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/lib.Response"
+                            "type": "object",
+                            "properties": {
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/models.User"
+                                    }
                                 },
-                                {
+                                "message": {
+                                    "type": "string"
+                                },
+                                "meta": {
                                     "type": "object",
                                     "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/models.User"
-                                            }
+                                        "currentPage": {
+                                            "type": "integer"
+                                        },
+                                        "perPage": {
+                                            "type": "integer"
+                                        },
+                                        "totalData": {
+                                            "type": "integer"
+                                        },
+                                        "totalPages": {
+                                            "type": "integer"
                                         }
                                     }
+                                },
+                                "success": {
+                                    "type": "boolean"
                                 }
-                            ]
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid pagination parameters",
+                        "schema": {
+                            "$ref": "#/definitions/lib.Response"
                         }
                     }
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Create a new user with a unique username and email",
                 "consumes": [
                     "application/x-www-form-urlencoded"
@@ -264,6 +316,14 @@ const docTemplate = `{
                 ],
                 "summary": "Create new user",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003ctoken\u003e",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "example": "koda@mail.com",
@@ -326,6 +386,11 @@ const docTemplate = `{
         },
         "/users/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retrieving user data based on Id",
                 "consumes": [
                     "application/x-www-form-urlencoded"
@@ -338,6 +403,14 @@ const docTemplate = `{
                 ],
                 "summary": "Get user by Id",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003ctoken\u003e",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "integer",
                         "description": "User Id",
@@ -380,6 +453,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Delete user by Id",
                 "consumes": [
                     "application/x-www-form-urlencoded"
@@ -392,6 +470,14 @@ const docTemplate = `{
                 ],
                 "summary": "Delete user",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003ctoken\u003e",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "integer",
                         "description": "User Id",
@@ -434,6 +520,11 @@ const docTemplate = `{
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Updating user data (username and email) based on Id",
                 "consumes": [
                     "application/x-www-form-urlencoded"
@@ -446,6 +537,14 @@ const docTemplate = `{
                 ],
                 "summary": "Update user",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003ctoken\u003e",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "integer",
                         "description": "User Id",
@@ -504,6 +603,11 @@ const docTemplate = `{
         },
         "/users/{id}/upload-profile": {
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Upload or replace the profile picture for a user by Id.",
                 "consumes": [
                     "multipart/form-data"
@@ -516,6 +620,14 @@ const docTemplate = `{
                 ],
                 "summary": "Upload user profile picture",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003ctoken\u003e",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "integer",
                         "description": "User Id",

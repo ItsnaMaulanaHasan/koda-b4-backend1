@@ -29,6 +29,8 @@ func NewUserController() *UserController {
 // @Description  Retrieving all user data with pagination support
 // @Tags         users
 // @Produce      json
+// @Security     BearerAuth
+// @Param        Authorization    header    string  true  "Bearer token"  default(Bearer <token>)
 // @Param        page   query     int  false  "Page number"  default(1)  minimum(1)
 // @Param        limit  query     int  false  "Number of items per page"  default(10)  minimum(1)  maximum(100)
 // @Success      200    {object}  object{success=bool,message=string,data=[]models.User,meta=object{currentPage=int,perPage=int,totalData=int,totalPages=int}}  "Success get all users"
@@ -109,6 +111,8 @@ func (uc *UserController) GetAllUser(ctx *gin.Context) {
 // @Tags         users
 // @Accept 		 x-www-form-urlencoded
 // @Produce      json
+// @Security     BearerAuth
+// @Param        Authorization  header    string  true  "Bearer token"  default(Bearer <token>)
 // @Param        id   path      int  true  "User Id"
 // @Success      200  {object}  lib.Response{data=models.User}  "Success get user"
 // @Failure      400  {object}  lib.Response  "Invalid Id format"
@@ -153,6 +157,8 @@ func (uc *UserController) GetUserById(ctx *gin.Context) {
 // @Tags         users
 // @Accept       x-www-form-urlencoded
 // @Produce      json
+// @Security     BearerAuth
+// @Param        Authorization  header    string  true  "Bearer token"  default(Bearer <token>)
 // @Param        user      formData  models.User true "User registration data"
 // @Success      200       {object}  lib.Response{data=models.User}  "User created successfully"
 // @Failure      400       {object}  lib.Response  "Invalid request body or hash password failed"
@@ -218,6 +224,8 @@ func (uc *UserController) CreateUser(ctx *gin.Context) {
 // @Tags         users
 // @Accept       x-www-form-urlencoded
 // @Produce      json
+// @Security     BearerAuth
+// @Param        Authorization  header    string  true  "Bearer token"  default(Bearer <token>)
 // @Param        id        path      int     true  "User Id"
 // @Param        username  formData  string  true  "Username (min 3, max 20 chars)"
 // @Param        email     formData  string  true  "Email address"
@@ -279,6 +287,8 @@ func (uc *UserController) UpdateUser(ctx *gin.Context) {
 // @Tags         users
 // @Accept       x-www-form-urlencoded
 // @Produce      json
+// @Security     BearerAuth
+// @Param        Authorization  header    string  true  "Bearer token"  default(Bearer <token>)
 // @Param        id   path      int  true  "User Id"
 // @Success      200  {object}  lib.Response{data=models.User}  "User deleted successfully"
 // @Failure      400  {object}  lib.Response  "Invalid Id format"
@@ -324,6 +334,8 @@ func (uc *UserController) DeleteUser(ctx *gin.Context) {
 // @Tags users
 // @Accept multipart/form-data
 // @Produce json
+// @Security     BearerAuth
+// @Param        Authorization  header    string  true  "Bearer token"  default(Bearer <token>)
 // @Param id path int true "User Id"
 // @Param file formData file true "Profile picture (JPEG or PNG, max 1MB)"
 // @Success 200 {object} lib.Response "Successfully uploaded photo profile"
