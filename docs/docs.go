@@ -174,11 +174,6 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "name": "profilePhoto",
-                        "in": "formData"
-                    },
-                    {
                         "maxLength": 20,
                         "minLength": 3,
                         "type": "string",
@@ -284,11 +279,6 @@ const docTemplate = `{
                         "name": "password",
                         "in": "formData",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "name": "profilePhoto",
-                        "in": "formData"
                     },
                     {
                         "maxLength": 20,
@@ -602,9 +592,6 @@ const docTemplate = `{
                     "format": "password",
                     "minLength": 6,
                     "example": "koda123"
-                },
-                "profilePhoto": {
-                    "type": "string"
                 },
                 "username": {
                     "type": "string",

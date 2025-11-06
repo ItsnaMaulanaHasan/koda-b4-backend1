@@ -20,8 +20,6 @@ definitions:
         format: password
         minLength: 6
         type: string
-      profilePhoto:
-        type: string
       username:
         example: koda
         maxLength: 20
@@ -137,9 +135,6 @@ paths:
         name: password
         required: true
         type: string
-      - in: formData
-        name: profilePhoto
-        type: string
       - example: koda
         in: formData
         maxLength: 20
@@ -206,9 +201,6 @@ paths:
         minLength: 6
         name: password
         required: true
-        type: string
-      - in: formData
-        name: profilePhoto
         type: string
       - example: koda
         in: formData
