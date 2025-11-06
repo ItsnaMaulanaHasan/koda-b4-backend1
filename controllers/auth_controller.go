@@ -94,9 +94,9 @@ func (ac *AuthController) Register(ctx *gin.Context) {
 // @Produce      json
 // @Param        email     formData  string  true  "Email address"
 // @Param        password  formData  string  true  "Input Password" format(password)
-// @Success      200       {object}  models.Response{data=models.User}  "User updated successfully"
-// @Failure      400       {object}  models.Response  "Invalid Id format or request body"
-// @Failure      404       {object}  models.Response  "User not found"
+// @Success      200       {object}  models.Response{data=models.User}  "User login Successfully"
+// @Failure      400       {object}  models.Response  "Invalid request body or hash password failed"
+// @Failure      401       {object}  models.Response  "Invalid email or password"
 // @Router       /auth/login [post]
 func (ac *AuthController) Login(ctx *gin.Context) {
 	var loginData struct {
@@ -157,6 +157,18 @@ func (ac *AuthController) Login(ctx *gin.Context) {
 	})
 }
 
+// ForgotPassword godoc
+// @Summary      Forgot password
+// @Description  Change user password
+// @Tags         auth
+// @Accept       x-www-form-urlencoded
+// @Produce      json
+// @Param        id           path      int  true  "User ID"
+// @Param        newPassword  formData  string  true  "Input new password" format(password)
+// @Success      200          {object}  models.Response{data=models.User}  "User updated successfully"
+// @Failure      400          {object}  models.Response  "Invalid Id format or request body"
+// @Failure      404          {object}  models.Response  "User not found"
+// @Router       /auth/forgot-password/{id} [patch]
 func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -168,7 +180,7 @@ func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
 	}
 
 	var newPassword struct {
-		NewPassword string `json:"newPassword" binding:"required,min=6"`
+		NewPassword string `form:"newPassword" binding:"required,min=6"`
 	}
 
 	err = ctx.ShouldBindWith(&newPassword, binding.Form)

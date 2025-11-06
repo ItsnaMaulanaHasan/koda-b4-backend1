@@ -37,6 +37,46 @@ info:
   title: API Documentation
   version: "1.0"
 paths:
+  /auth/forgot-password/{id}:
+    patch:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Change user password
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Input new password
+        format: password
+        in: formData
+        name: newPassword
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User updated successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.User'
+              type: object
+        "400":
+          description: Invalid Id format or request body
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Forgot password
+      tags:
+      - auth
   /auth/login:
     post:
       consumes:
@@ -58,7 +98,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: User updated successfully
+          description: User login Successfully
           schema:
             allOf:
             - $ref: '#/definitions/models.Response'
@@ -67,11 +107,11 @@ paths:
                   $ref: '#/definitions/models.User'
               type: object
         "400":
-          description: Invalid Id format or request body
+          description: Invalid request body or hash password failed
           schema:
             $ref: '#/definitions/models.Response'
-        "404":
-          description: User not found
+        "401":
+          description: Invalid email or password
           schema:
             $ref: '#/definitions/models.Response'
       summary: Login user

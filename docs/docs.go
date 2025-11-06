@@ -15,6 +15,70 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth/forgot-password/{id}": {
+            "patch": {
+                "description": "Change user password",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Forgot password",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "format": "password",
+                        "description": "Input new password",
+                        "name": "newPassword",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User updated successfully",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.User"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid Id format or request body",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/login": {
             "post": {
                 "description": "Log in with existing email and username data",
@@ -47,7 +111,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "User updated successfully",
+                        "description": "User login Successfully",
                         "schema": {
                             "allOf": [
                                 {
@@ -65,13 +129,13 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid Id format or request body",
+                        "description": "Invalid request body or hash password failed",
                         "schema": {
                             "$ref": "#/definitions/models.Response"
                         }
                     },
-                    "404": {
-                        "description": "User not found",
+                    "401": {
+                        "description": "Invalid email or password",
                         "schema": {
                             "$ref": "#/definitions/models.Response"
                         }
