@@ -14,5 +14,6 @@ func SetupUserRoutes(r *gin.Engine, userController *controllers.UserController) 
 		users.POST("", userController.CreateUser)
 		users.PATCH("/:id", userController.UpdateUser)
 		users.DELETE("/:id", userController.DeleteUser)
+		users.PATCH("/:id/upload-profile", userController.UploadProfile)
 	}
 }
