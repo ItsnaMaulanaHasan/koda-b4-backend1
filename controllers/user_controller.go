@@ -315,7 +315,7 @@ func (uc *UserController) UploadProfile(ctx *gin.Context) {
 
 	ext := filepath.Ext(file.Filename)
 	filename := fmt.Sprintf("user_%d_%d%s", id, time.Now().Unix(), ext)
-	filepath := "./photo-profile-users/" + filename
+	filepath := "./uploads/profiles/" + filename
 
 	if err := ctx.SaveUploadedFile(file, filepath); err != nil {
 		ctx.JSON(http.StatusInternalServerError, models.Response{
@@ -332,7 +332,7 @@ func (uc *UserController) UploadProfile(ctx *gin.Context) {
 		Message: "Successfully uploaded photo profile",
 		Data: map[string]string{
 			"filename": filename,
-			"url":      "/photo-profile-users/" + filename,
+			"url":      "/uploads/profiles/" + filename,
 		},
 	})
 }
