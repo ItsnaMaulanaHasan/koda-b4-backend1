@@ -21,6 +21,7 @@ import (
 func main() {
 	r := gin.Default()
 
+	r.MaxMultipartMemory = 8 << 20
 	r.RedirectTrailingSlash = true
 
 	r.Use(middlewares.AllowPrefic())
