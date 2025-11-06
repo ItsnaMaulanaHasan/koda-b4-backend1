@@ -5,6 +5,7 @@ import (
 	"gin-practice/lib"
 	"gin-practice/models"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 	"time"
@@ -34,9 +35,10 @@ func (uc *UserController) GetAllUser(ctx *gin.Context) {
 	var responseData = []models.User{}
 	for _, u := range uc.users {
 		responseData = append(responseData, models.User{
-			Id:       u.Id,
-			Username: u.Username,
-			Email:    u.Email,
+			Id:           u.Id,
+			Username:     u.Username,
+			Email:        u.Email,
+			PhotoProfile: u.PhotoProfile,
 		})
 	}
 	ctx.JSON(http.StatusOK, models.Response{
@@ -316,6 +318,17 @@ func (uc *UserController) UploadProfile(ctx *gin.Context) {
 	ext := filepath.Ext(file.Filename)
 	filename := fmt.Sprintf("user_%d_%d%s", id, time.Now().Unix(), ext)
 	filepath := "./uploads/profiles/" + filename
+
+	if foundUser.PhotoProfile != "" {
+		err = os.Remove("./uploads/profiles/" + foundUser.PhotoProfile)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, models.Response{
+				Success: false,
+				Message: err.Error(),
+			})
+			return
+		}
+	}
 
 	if err := ctx.SaveUploadedFile(file, filepath); err != nil {
 		ctx.JSON(http.StatusInternalServerError, models.Response{
