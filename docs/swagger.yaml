@@ -20,6 +20,8 @@ definitions:
         format: password
         minLength: 6
         type: string
+      profilePhoto:
+        type: string
       username:
         example: koda
         maxLength: 20
@@ -135,6 +137,9 @@ paths:
         name: password
         required: true
         type: string
+      - in: formData
+        name: profilePhoto
+        type: string
       - example: koda
         in: formData
         maxLength: 20
@@ -201,6 +206,9 @@ paths:
         minLength: 6
         name: password
         required: true
+        type: string
+      - in: formData
+        name: profilePhoto
         type: string
       - example: koda
         in: formData
@@ -340,6 +348,44 @@ paths:
           schema:
             $ref: '#/definitions/models.Response'
       summary: Update user
+      tags:
+      - users
+  /users/{id}/upload-profile:
+    patch:
+      consumes:
+      - multipart/form-data
+      description: Upload or replace the profile picture for a user by ID.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Profile picture (JPEG or PNG, max 1MB)
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully uploaded photo profile
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad request (invalid Id, wrong file type, or file too large)
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Failed to save file
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Upload user profile picture
       tags:
       - users
 swagger: "2.0"

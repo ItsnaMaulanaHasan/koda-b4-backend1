@@ -263,6 +263,19 @@ func (uc *UserController) DeleteUser(ctx *gin.Context) {
 	}
 }
 
+// UploadProfile godoc
+// @Summary Upload user profile picture
+// @Description Upload or replace the profile picture for a user by ID.
+// @Tags users
+// @Accept multipart/form-data
+// @Produce json
+// @Param id path int true "User ID"
+// @Param file formData file true "Profile picture (JPEG or PNG, max 1MB)"
+// @Success 200 {object} models.Response "Successfully uploaded photo profile"
+// @Failure 400 {object} models.Response "Bad request (invalid Id, wrong file type, or file too large)"
+// @Failure 404 {object} models.Response "User not found"
+// @Failure 500 {object} models.Response "Failed to save file"
+// @Router /users/{id}/upload-profile [patch]
 func (uc *UserController) UploadProfile(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -301,7 +314,7 @@ func (uc *UserController) UploadProfile(ctx *gin.Context) {
 	if file.Size > 1<<20 {
 		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
-			Message: "File size must be less than 5MB",
+			Message: "File size must be less than 1MB",
 		})
 		return
 	}

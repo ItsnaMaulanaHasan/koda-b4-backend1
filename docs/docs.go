@@ -174,6 +174,11 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "name": "profilePhoto",
+                        "in": "formData"
+                    },
+                    {
                         "maxLength": 20,
                         "minLength": 3,
                         "type": "string",
@@ -279,6 +284,11 @@ const docTemplate = `{
                         "name": "password",
                         "in": "formData",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "profilePhoto",
+                        "in": "formData"
                     },
                     {
                         "maxLength": 20,
@@ -501,6 +511,63 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/users/{id}/upload-profile": {
+            "patch": {
+                "description": "Upload or replace the profile picture for a user by ID.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Upload user profile picture",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Profile picture (JPEG or PNG, max 1MB)",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully uploaded photo profile",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request (invalid Id, wrong file type, or file too large)",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to save file",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -535,6 +602,9 @@ const docTemplate = `{
                     "format": "password",
                     "minLength": 6,
                     "example": "koda123"
+                },
+                "profilePhoto": {
+                    "type": "string"
                 },
                 "username": {
                     "type": "string",
