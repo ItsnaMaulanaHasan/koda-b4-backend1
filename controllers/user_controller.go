@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type UserController struct {
@@ -20,14 +21,40 @@ func NewUserController() *UserController {
 	}
 }
 
+// GetAllUser godoc
+// @Summary      Get all users
+// @Description  Retrieving all user data
+// @Tags         users
+// @Produce      json
+// @Success      200  {object}  models.Response{data=[]models.User}  "Success get all users"
+// @Router       /users [get]
 func (uc *UserController) GetAllUser(ctx *gin.Context) {
+	var responseData = []models.User{}
+	for i, u := range uc.users {
+		responseData[i] = models.User{
+			Id:       u.Id,
+			Username: u.Username,
+			Email:    u.Email,
+		}
+	}
 	ctx.JSON(http.StatusOK, models.Response{
 		Success: true,
 		Message: "Success get all user",
-		Data:    uc.users,
+		Data:    responseData,
 	})
 }
 
+// GetUserById godoc
+// @Summary      Get user by ID
+// @Description  Retrieving user data based on Id
+// @Tags         users
+// @Accept 		 x-www-form-urlencoded
+// @Produce      json
+// @Param        id   path      int  true  "User ID"
+// @Success      200  {object}  models.Response{data=models.User}  "Success get user"
+// @Failure      400  {object}  models.Response  "Invalid Id format"
+// @Failure      404  {object}  models.Response  "User not found"
+// @Router       /users/{id} [get]
 func (uc *UserController) GetUserById(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -46,6 +73,8 @@ func (uc *UserController) GetUserById(ctx *gin.Context) {
 	}
 
 	if foundUser != nil {
+		foundUser.Password = ""
+
 		ctx.JSON(http.StatusOK, models.Response{
 			Success: true,
 			Message: fmt.Sprintf("Success get user with id %d", id),
@@ -59,9 +88,20 @@ func (uc *UserController) GetUserById(ctx *gin.Context) {
 	}
 }
 
+// CreateUser godoc
+// @Summary      Create new user
+// @Description  Create a new user with a unique username and email
+// @Tags         users
+// @Accept       x-www-form-urlencoded
+// @Produce      json
+// @Param        user      formData  models.User true "User registration data"
+// @Success      200       {object}  models.Response{data=models.User}  "User created successfully"
+// @Failure      400       {object}  models.Response  "Invalid request body or hash password failed"
+// @Failure      409       {object}  models.Response  "Email or username already exists"
+// @Router       /users [post]
 func (uc *UserController) CreateUser(ctx *gin.Context) {
 	var body models.User
-	err := ctx.ShouldBindBodyWithJSON(&body)
+	err := ctx.ShouldBindWith(&body, binding.Form)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: true,
@@ -104,6 +144,8 @@ func (uc *UserController) CreateUser(ctx *gin.Context) {
 	body.Password = string(hashPassword)
 	uc.users = append(uc.users, body)
 
+	body.Password = ""
+
 	ctx.JSON(http.StatusOK, models.Response{
 		Success: true,
 		Message: "Create user succesfully",
@@ -111,6 +153,19 @@ func (uc *UserController) CreateUser(ctx *gin.Context) {
 	})
 }
 
+// UpdateUser godoc
+// @Summary      Update user
+// @Description  Updating user data (username and email) based on Id
+// @Tags         users
+// @Accept       x-www-form-urlencoded
+// @Produce      json
+// @Param        id        path      int     true  "User ID"
+// @Param        username  formData  string  true  "Username (min 3, max 20 chars)"
+// @Param        email     formData  string  true  "Email address"
+// @Success      200       {object}  models.Response{data=models.User}  "User updated successfully"
+// @Failure      400       {object}  models.Response  "Invalid Id format or request body"
+// @Failure      404       {object}  models.Response  "User not found"
+// @Router       /users/{id} [patch]
 func (uc *UserController) UpdateUser(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -125,7 +180,7 @@ func (uc *UserController) UpdateUser(ctx *gin.Context) {
 		Username string `json:"username" binding:"required,min=3,max=20"`
 		Email    string `json:"email" binding:"required,email"`
 	}
-	err = ctx.ShouldBindBodyWithJSON(&userUpdate)
+	err = ctx.ShouldBindWith(&userUpdate, binding.Form)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
@@ -145,6 +200,7 @@ func (uc *UserController) UpdateUser(ctx *gin.Context) {
 	}
 
 	if foundUser != nil {
+		foundUser.Password = ""
 		ctx.JSON(http.StatusOK, models.Response{
 			Success: true,
 			Message: fmt.Sprintf("User with id %d successfully updated", id),
@@ -158,6 +214,17 @@ func (uc *UserController) UpdateUser(ctx *gin.Context) {
 	}
 }
 
+// DeleteUser godoc
+// @Summary      Delete user
+// @Description  Delete user by Id
+// @Tags         users
+// @Accept       x-www-form-urlencoded
+// @Produce      json
+// @Param        id   path      int  true  "User Id"
+// @Success      200  {object}  models.Response{data=models.User}  "User deleted successfully"
+// @Failure      400  {object}  models.Response  "Invalid Id format"
+// @Failure      404  {object}  models.Response  "User not found"
+// @Router       /users/{id} [delete]
 func (uc *UserController) DeleteUser(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -178,6 +245,7 @@ func (uc *UserController) DeleteUser(ctx *gin.Context) {
 	}
 
 	if foundUser != nil {
+		foundUser.Password = ""
 		ctx.JSON(http.StatusOK, models.Response{
 			Success: true,
 			Message: fmt.Sprintf("User data with id %d successfully deleted", id),

@@ -1,8 +1,8 @@
 package models
 
 type User struct {
-	Id       int    `json:"id"`
-	Username string `json:"username,omitempty" binding:"required,min=3,max=20"`
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password,omitempty" binding:"required,min=6"`
+	Id       int    `form:"id" swaggerignore:"true"`
+	Username string `form:"username" binding:"required,min=3,max=20" example:"koda"`
+	Email    string `form:"email" binding:"required,email" example:"koda@mail.com"`
+	Password string `form:"password" binding:"required,min=6" example:"koda123" format:"password"`
 }
