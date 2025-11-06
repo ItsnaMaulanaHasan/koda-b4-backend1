@@ -174,7 +174,7 @@ func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
-			Success: true,
+			Success: false,
 			Message: err.Error(),
 		})
 		return
@@ -202,26 +202,26 @@ func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
 		return
 	}
 
-	var foundUser *models.User
 	for i := range ac.userController.users {
 		if ac.userController.users[i].Id == id {
 			ac.userController.users[i].Password = hashPassword
-			foundUser = &ac.userController.users[i]
-			break
+			responseData := models.User{
+				Id:       ac.userController.users[i].Id,
+				Username: ac.userController.users[i].Username,
+				Email:    ac.userController.users[i].Email,
+			}
+
+			ctx.JSON(http.StatusOK, models.Response{
+				Success: true,
+				Message: "Password successfully updated",
+				Data:    responseData,
+			})
+			return
 		}
 	}
 
-	if foundUser != nil {
-		foundUser.Password = ""
-		ctx.JSON(http.StatusOK, models.Response{
-			Success: true,
-			Message: "Password success updates",
-			Data:    foundUser,
-		})
-	} else {
-		ctx.JSON(http.StatusNotFound, models.Response{
-			Success: false,
-			Message: "User not found",
-		})
-	}
+	ctx.JSON(http.StatusNotFound, models.Response{
+		Success: false,
+		Message: "User not found",
+	})
 }
