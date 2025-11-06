@@ -1,6 +1,7 @@
 # Get all users
 GET /users HTTP/1.1
 Host: localhost:8080
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxNzYyNTA5MTg3LCJpYXQiOjE3NjI0MjI3ODd9.h8JXTgogDhW2KthLJHkaU1zOWpI3HBto2VDHjBQycWQ
 
 ###
 
@@ -8,6 +9,7 @@ Host: localhost:8080
 @idAdd = 1
 GET /users/{{idAdd}} HTTP/1.1
 Host: localhost:8080
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxNzYyNTA5MTg3LCJpYXQiOjE3NjI0MjI3ODd9.h8JXTgogDhW2KthLJHkaU1zOWpI3HBto2VDHjBQycWQ
 
 ###
 
@@ -15,6 +17,7 @@ Host: localhost:8080
 POST /users HTTP/1.1
 Host: localhost:8080
 Content-Type: application/x-www-form-urlencoded
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxNzYyNTA5MTg3LCJpYXQiOjE3NjI0MjI3ODd9.h8JXTgogDhW2KthLJHkaU1zOWpI3HBto2VDHjBQycWQ
 
 username=itsna&email=itsna@mail.com&password=12345678
 
@@ -25,6 +28,7 @@ username=itsna&email=itsna@mail.com&password=12345678
 PATCH /users/{{idEdit}} HTTP/1.1
 Host: localhost:8080
 Content-Type: application/x-www-form-urlencoded
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxNzYyNTA5MTg3LCJpYXQiOjE3NjI0MjI3ODd9.h8JXTgogDhW2KthLJHkaU1zOWpI3HBto2VDHjBQycWQ
 
 username=itsna2&email=itsna@mail.com
 
@@ -34,6 +38,7 @@ username=itsna2&email=itsna@mail.com
 @id = 1
 DELETE  /users/{{id}} HTTP/1.1
 Host: localhost:8080
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxNzYyNTA5MTg3LCJpYXQiOjE3NjI0MjI3ODd9.h8JXTgogDhW2KthLJHkaU1zOWpI3HBto2VDHjBQycWQ
 
 ###
 
@@ -51,7 +56,7 @@ POST /auth/login HTTP/1.1
 Host: localhost:8080
 Content-Type: application/x-www-form-urlencoded
 
-email=budiman@mail.com&password=03062003
+email=budiman@mail.com&password=12345678
 
 ###
 
