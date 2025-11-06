@@ -26,25 +26,80 @@ func NewUserController() *UserController {
 
 // GetAllUser godoc
 // @Summary      Get all users
-// @Description  Retrieving all user data
+// @Description  Retrieving all user data with pagination support
 // @Tags         users
 // @Produce      json
-// @Success      200  {object}  models.Response{data=[]models.User}  "Success get all users"
+// @Param        page   query     int  false  "Page number"  default(1)  minimum(1)
+// @Param        limit  query     int  false  "Number of items per page"  default(10)  minimum(1)  maximum(100)
+// @Success      200    {object}  object{success=bool,message=string,data=[]models.User,meta=object{currentPage=int,perPage=int,totalData=int,totalPages=int}}  "Success get all users"
+// @Failure      400    {object}  lib.Response  "Invalid pagination parameters"
 // @Router       /users [get]
 func (uc *UserController) GetAllUser(ctx *gin.Context) {
-	var responseData = []models.User{}
-	for _, u := range uc.users {
-		responseData = append(responseData, models.User{
-			Id:           u.Id,
-			Username:     u.Username,
-			Email:        u.Email,
-			PhotoProfile: u.PhotoProfile,
+	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(ctx.DefaultQuery("limit", "10"))
+
+	if page < 1 {
+		ctx.JSON(http.StatusBadRequest, lib.Response{
+			Success: false,
+			Message: "Page must be greater than 0",
 		})
+		return
 	}
-	ctx.JSON(http.StatusOK, models.Response{
-		Success: true,
-		Message: "Success get all user",
-		Data:    responseData,
+
+	if limit < 1 {
+		ctx.JSON(http.StatusBadRequest, lib.Response{
+			Success: false,
+			Message: "Limit must be greater than 0",
+		})
+		return
+	}
+
+	if limit > 100 {
+		ctx.JSON(http.StatusBadRequest, lib.Response{
+			Success: false,
+			Message: "Limit cannot exceed 100",
+		})
+		return
+	}
+
+	totalData := len(uc.users)
+	totalPage := (totalData + limit - 1) / limit
+	startIndex := (page - 1) * limit
+	endIndex := min(startIndex+limit, totalData)
+
+	var responseData []models.User
+
+	if startIndex >= totalData && totalData > 0 {
+		ctx.JSON(http.StatusBadRequest, lib.Response{
+			Success: false,
+			Message: "Page is out of range",
+		})
+		return
+	}
+
+	if startIndex < totalData {
+		for _, u := range uc.users[startIndex:endIndex] {
+			responseData = append(responseData, models.User{
+				Id:           u.Id,
+				Username:     u.Username,
+				Email:        u.Email,
+				PhotoProfile: u.PhotoProfile,
+			})
+		}
+	} else {
+		responseData = []models.User{}
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Success get all user",
+		"data":    responseData,
+		"meta": gin.H{
+			"currentPage": page,
+			"perPage":     limit,
+			"totalData":   totalData,
+			"totalPages":  totalPage,
+		},
 	})
 }
 
@@ -55,14 +110,14 @@ func (uc *UserController) GetAllUser(ctx *gin.Context) {
 // @Accept 		 x-www-form-urlencoded
 // @Produce      json
 // @Param        id   path      int  true  "User Id"
-// @Success      200  {object}  models.Response{data=models.User}  "Success get user"
-// @Failure      400  {object}  models.Response  "Invalid Id format"
-// @Failure      404  {object}  models.Response  "User not found"
+// @Success      200  {object}  lib.Response{data=models.User}  "Success get user"
+// @Failure      400  {object}  lib.Response  "Invalid Id format"
+// @Failure      404  {object}  lib.Response  "User not found"
 // @Router       /users/{id} [get]
 func (uc *UserController) GetUserById(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
+		ctx.JSON(http.StatusBadRequest, lib.Response{
 			Success: false,
 			Message: "Invalid Id format",
 		})
@@ -79,13 +134,13 @@ func (uc *UserController) GetUserById(ctx *gin.Context) {
 	if foundUser != nil {
 		foundUser.Password = ""
 
-		ctx.JSON(http.StatusOK, models.Response{
+		ctx.JSON(http.StatusOK, lib.Response{
 			Success: true,
 			Message: "Success get user",
 			Data:    foundUser,
 		})
 	} else {
-		ctx.JSON(http.StatusNotFound, models.Response{
+		ctx.JSON(http.StatusNotFound, lib.Response{
 			Success: false,
 			Message: "User not found",
 		})
@@ -99,15 +154,15 @@ func (uc *UserController) GetUserById(ctx *gin.Context) {
 // @Accept       x-www-form-urlencoded
 // @Produce      json
 // @Param        user      formData  models.User true "User registration data"
-// @Success      200       {object}  models.Response{data=models.User}  "User created successfully"
-// @Failure      400       {object}  models.Response  "Invalid request body or hash password failed"
-// @Failure      409       {object}  models.Response  "Email or username already exists"
+// @Success      200       {object}  lib.Response{data=models.User}  "User created successfully"
+// @Failure      400       {object}  lib.Response  "Invalid request body or hash password failed"
+// @Failure      409       {object}  lib.Response  "Email or username already exists"
 // @Router       /users [post]
 func (uc *UserController) CreateUser(ctx *gin.Context) {
 	var body models.User
 	err := ctx.ShouldBindWith(&body, binding.Form)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
+		ctx.JSON(http.StatusBadRequest, lib.Response{
 			Success: true,
 			Message: err.Error(),
 		})
@@ -116,7 +171,7 @@ func (uc *UserController) CreateUser(ctx *gin.Context) {
 
 	for _, user := range uc.users {
 		if user.Email == body.Email {
-			ctx.JSON(http.StatusConflict, models.Response{
+			ctx.JSON(http.StatusConflict, lib.Response{
 				Success: false,
 				Message: "Email already registered",
 			})
@@ -126,7 +181,7 @@ func (uc *UserController) CreateUser(ctx *gin.Context) {
 
 	for _, user := range uc.users {
 		if user.Username == body.Username {
-			ctx.JSON(http.StatusConflict, models.Response{
+			ctx.JSON(http.StatusConflict, lib.Response{
 				Success: false,
 				Message: "Username already taken",
 			})
@@ -138,7 +193,7 @@ func (uc *UserController) CreateUser(ctx *gin.Context) {
 
 	hashPassword, err := lib.HashPassword(body.Password)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
+		ctx.JSON(http.StatusBadRequest, lib.Response{
 			Success: false,
 			Message: "Hash password failed",
 		})
@@ -150,7 +205,7 @@ func (uc *UserController) CreateUser(ctx *gin.Context) {
 
 	body.Password = ""
 
-	ctx.JSON(http.StatusOK, models.Response{
+	ctx.JSON(http.StatusOK, lib.Response{
 		Success: true,
 		Message: "User created successfully",
 		Data:    body,
@@ -166,14 +221,14 @@ func (uc *UserController) CreateUser(ctx *gin.Context) {
 // @Param        id        path      int     true  "User Id"
 // @Param        username  formData  string  true  "Username (min 3, max 20 chars)"
 // @Param        email     formData  string  true  "Email address"
-// @Success      200       {object}  models.Response{data=models.User}  "User updated successfully"
-// @Failure      400       {object}  models.Response  "Invalid Id format or request body"
-// @Failure      404       {object}  models.Response  "User not found"
+// @Success      200       {object}  lib.Response{data=models.User}  "User updated successfully"
+// @Failure      400       {object}  lib.Response  "Invalid Id format or request body"
+// @Failure      404       {object}  lib.Response  "User not found"
 // @Router       /users/{id} [patch]
 func (uc *UserController) UpdateUser(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
+		ctx.JSON(http.StatusBadRequest, lib.Response{
 			Success: false,
 			Message: "Invalid Id format",
 		})
@@ -187,7 +242,7 @@ func (uc *UserController) UpdateUser(ctx *gin.Context) {
 	err = ctx.ShouldBindWith(&userUpdate, binding.Form)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
+		ctx.JSON(http.StatusBadRequest, lib.Response{
 			Success: true,
 			Message: err.Error(),
 		})
@@ -205,13 +260,13 @@ func (uc *UserController) UpdateUser(ctx *gin.Context) {
 
 	if foundUser != nil {
 		foundUser.Password = ""
-		ctx.JSON(http.StatusOK, models.Response{
+		ctx.JSON(http.StatusOK, lib.Response{
 			Success: true,
 			Message: "User updated successfully",
 			Data:    foundUser,
 		})
 	} else {
-		ctx.JSON(http.StatusNotFound, models.Response{
+		ctx.JSON(http.StatusNotFound, lib.Response{
 			Success: false,
 			Message: "User not found",
 		})
@@ -225,14 +280,14 @@ func (uc *UserController) UpdateUser(ctx *gin.Context) {
 // @Accept       x-www-form-urlencoded
 // @Produce      json
 // @Param        id   path      int  true  "User Id"
-// @Success      200  {object}  models.Response{data=models.User}  "User deleted successfully"
-// @Failure      400  {object}  models.Response  "Invalid Id format"
-// @Failure      404  {object}  models.Response  "User not found"
+// @Success      200  {object}  lib.Response{data=models.User}  "User deleted successfully"
+// @Failure      400  {object}  lib.Response  "Invalid Id format"
+// @Failure      404  {object}  lib.Response  "User not found"
 // @Router       /users/{id} [delete]
 func (uc *UserController) DeleteUser(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
+		ctx.JSON(http.StatusBadRequest, lib.Response{
 			Success: false,
 			Message: "Invalid Id format",
 		})
@@ -250,13 +305,13 @@ func (uc *UserController) DeleteUser(ctx *gin.Context) {
 
 	if foundUser != nil {
 		foundUser.Password = ""
-		ctx.JSON(http.StatusOK, models.Response{
+		ctx.JSON(http.StatusOK, lib.Response{
 			Success: true,
 			Message: "User deleted successfully",
 			Data:    foundUser,
 		})
 	} else {
-		ctx.JSON(http.StatusNotFound, models.Response{
+		ctx.JSON(http.StatusNotFound, lib.Response{
 			Success: false,
 			Message: "User not found",
 		})
@@ -271,15 +326,15 @@ func (uc *UserController) DeleteUser(ctx *gin.Context) {
 // @Produce json
 // @Param id path int true "User Id"
 // @Param file formData file true "Profile picture (JPEG or PNG, max 1MB)"
-// @Success 200 {object} models.Response "Successfully uploaded photo profile"
-// @Failure 400 {object} models.Response "Bad request (invalid Id, wrong file type, or file too large)"
-// @Failure 404 {object} models.Response "User not found"
-// @Failure 500 {object} models.Response "Failed to save file"
+// @Success 200 {object} lib.Response "Successfully uploaded photo profile"
+// @Failure 400 {object} lib.Response "Bad request (invalid Id, wrong file type, or file too large)"
+// @Failure 404 {object} lib.Response "User not found"
+// @Failure 500 {object} lib.Response "Failed to save file"
 // @Router /users/{id}/upload-profile [patch]
 func (uc *UserController) UploadProfile(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
+		ctx.JSON(http.StatusBadRequest, lib.Response{
 			Success: false,
 			Message: err.Error(),
 		})
@@ -295,7 +350,7 @@ func (uc *UserController) UploadProfile(ctx *gin.Context) {
 	}
 
 	if foundUser == nil {
-		ctx.JSON(http.StatusNotFound, models.Response{
+		ctx.JSON(http.StatusNotFound, lib.Response{
 			Success: false,
 			Message: "User not found",
 		})
@@ -304,7 +359,7 @@ func (uc *UserController) UploadProfile(ctx *gin.Context) {
 
 	file, err := ctx.FormFile("file")
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
+		ctx.JSON(http.StatusBadRequest, lib.Response{
 			Success: false,
 			Message: err.Error(),
 		})
@@ -312,7 +367,7 @@ func (uc *UserController) UploadProfile(ctx *gin.Context) {
 	}
 
 	if file.Size > 1<<20 {
-		ctx.JSON(http.StatusBadRequest, models.Response{
+		ctx.JSON(http.StatusBadRequest, lib.Response{
 			Success: false,
 			Message: "File size must be less than 1MB",
 		})
@@ -321,7 +376,7 @@ func (uc *UserController) UploadProfile(ctx *gin.Context) {
 
 	contentType := file.Header.Get("Content-Type")
 	if contentType != "image/jpeg" && contentType != "image/png" {
-		ctx.JSON(http.StatusBadRequest, models.Response{
+		ctx.JSON(http.StatusBadRequest, lib.Response{
 			Success: false,
 			Message: "Only image files (JPEG, PNG) are allowed",
 		})
@@ -335,7 +390,7 @@ func (uc *UserController) UploadProfile(ctx *gin.Context) {
 	if foundUser.PhotoProfile != "" {
 		err = os.Remove("./uploads/profiles/" + foundUser.PhotoProfile)
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, models.Response{
+			ctx.JSON(http.StatusBadRequest, lib.Response{
 				Success: false,
 				Message: err.Error(),
 			})
@@ -344,7 +399,7 @@ func (uc *UserController) UploadProfile(ctx *gin.Context) {
 	}
 
 	if err := ctx.SaveUploadedFile(file, filepath); err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.Response{
+		ctx.JSON(http.StatusInternalServerError, lib.Response{
 			Success: false,
 			Message: "Failed to save file",
 		})
@@ -353,7 +408,7 @@ func (uc *UserController) UploadProfile(ctx *gin.Context) {
 
 	foundUser.PhotoProfile = filename
 
-	ctx.JSON(http.StatusOK, models.Response{
+	ctx.JSON(http.StatusOK, lib.Response{
 		Success: true,
 		Message: "Successfully uploaded photo profile",
 		Data: map[string]string{

@@ -28,15 +28,15 @@ func NewAuthController(uc *UserController) *AuthController {
 // @Accept       x-www-form-urlencoded
 // @Produce      json
 // @Param        user      formData  models.User true "User registration data"
-// @Success      200       {object}  models.Response{data=models.User}  "User created successfully"
-// @Failure      400       {object}  models.Response  "Invalid request body or hash password failed"
-// @Failure      409       {object}  models.Response  "Email or username already exists"
+// @Success      200       {object}  lib.Response{data=models.User}  "User created successfully"
+// @Failure      400       {object}  lib.Response  "Invalid request body or hash password failed"
+// @Failure      409       {object}  lib.Response  "Email or username already exists"
 // @Router       /auth/register [post]
 func (ac *AuthController) Register(ctx *gin.Context) {
 	var body models.User
 	err := ctx.ShouldBindWith(&body, binding.Form)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
+		ctx.JSON(http.StatusBadRequest, lib.Response{
 			Success: false,
 			Message: err.Error(),
 		})
@@ -45,7 +45,7 @@ func (ac *AuthController) Register(ctx *gin.Context) {
 
 	for _, user := range ac.userController.users {
 		if user.Email == body.Email {
-			ctx.JSON(http.StatusConflict, models.Response{
+			ctx.JSON(http.StatusConflict, lib.Response{
 				Success: false,
 				Message: "Email already registered",
 			})
@@ -55,7 +55,7 @@ func (ac *AuthController) Register(ctx *gin.Context) {
 
 	for _, user := range ac.userController.users {
 		if user.Username == body.Username {
-			ctx.JSON(http.StatusConflict, models.Response{
+			ctx.JSON(http.StatusConflict, lib.Response{
 				Success: false,
 				Message: "Username already taken",
 			})
@@ -67,7 +67,7 @@ func (ac *AuthController) Register(ctx *gin.Context) {
 
 	hashPassword, err := lib.HashPassword(body.Password)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
+		ctx.JSON(http.StatusBadRequest, lib.Response{
 			Success: false,
 			Message: "Hash password failed",
 		})
@@ -79,7 +79,7 @@ func (ac *AuthController) Register(ctx *gin.Context) {
 
 	body.Password = ""
 
-	ctx.JSON(http.StatusCreated, models.Response{
+	ctx.JSON(http.StatusCreated, lib.Response{
 		Success: true,
 		Message: "User registered successfully",
 		Data:    body,
@@ -94,9 +94,9 @@ func (ac *AuthController) Register(ctx *gin.Context) {
 // @Produce      json
 // @Param        email     formData  string  true  "Email address"
 // @Param        password  formData  string  true  "Input Password" format(password)
-// @Success      200       {object}  models.Response{data=models.User}  "User login Successfully"
-// @Failure      400       {object}  models.Response  "Invalid request body or hash password failed"
-// @Failure      401       {object}  models.Response  "Invalid email or password"
+// @Success      200       {object}  lib.Response{data=models.User}  "User login Successfully"
+// @Failure      400       {object}  lib.Response  "Invalid request body or hash password failed"
+// @Failure      401       {object}  lib.Response  "Invalid email or password"
 // @Router       /auth/login [post]
 func (ac *AuthController) Login(ctx *gin.Context) {
 	var loginData struct {
@@ -106,7 +106,7 @@ func (ac *AuthController) Login(ctx *gin.Context) {
 
 	err := ctx.ShouldBindWith(&loginData, binding.Form)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
+		ctx.JSON(http.StatusBadRequest, lib.Response{
 			Success: false,
 			Message: err.Error(),
 		})
@@ -118,7 +118,7 @@ func (ac *AuthController) Login(ctx *gin.Context) {
 		if ac.userController.users[i].Email == loginData.Email {
 			isPasswordValid, err := argon2.VerifyEncoded([]byte(loginData.Password), []byte(ac.userController.users[i].Password))
 			if err != nil {
-				ctx.JSON(http.StatusBadRequest, models.Response{
+				ctx.JSON(http.StatusBadRequest, lib.Response{
 					Success: false,
 					Message: err.Error(),
 				})
@@ -128,7 +128,7 @@ func (ac *AuthController) Login(ctx *gin.Context) {
 			if isPasswordValid {
 				foundUser = &ac.userController.users[i]
 			} else {
-				ctx.JSON(http.StatusUnauthorized, models.Response{
+				ctx.JSON(http.StatusUnauthorized, lib.Response{
 					Success: false,
 					Message: "Invalid email or password",
 				})
@@ -138,7 +138,7 @@ func (ac *AuthController) Login(ctx *gin.Context) {
 	}
 
 	if foundUser == nil {
-		ctx.JSON(http.StatusUnauthorized, models.Response{
+		ctx.JSON(http.StatusUnauthorized, lib.Response{
 			Success: false,
 			Message: "Invalid email or password",
 		})
@@ -151,7 +151,7 @@ func (ac *AuthController) Login(ctx *gin.Context) {
 		Email:    foundUser.Email,
 	}
 
-	ctx.JSON(http.StatusOK, models.Response{
+	ctx.JSON(http.StatusOK, lib.Response{
 		Success: true,
 		Message: "User login Successfully",
 		Data:    responseData,
@@ -166,14 +166,14 @@ func (ac *AuthController) Login(ctx *gin.Context) {
 // @Produce      json
 // @Param        id           path      int  true  "User Id"
 // @Param        newPassword  formData  string  true  "Input new password"  format(password)
-// @Success      200          {object}  models.Response{data=models.User}  "User updated successfully"
-// @Failure      400          {object}  models.Response  "Invalid ]request body or hashing password failed"
-// @Failure      404          {object}  models.Response  "User not found"
+// @Success      200          {object}  lib.Response{data=models.User}  "User updated successfully"
+// @Failure      400          {object}  lib.Response  "Invalid ]request body or hashing password failed"
+// @Failure      404          {object}  lib.Response  "User not found"
 // @Router       /auth/forgot-password/{id} [patch]
 func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
+		ctx.JSON(http.StatusBadRequest, lib.Response{
 			Success: false,
 			Message: err.Error(),
 		})
@@ -186,7 +186,7 @@ func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
 
 	err = ctx.ShouldBindWith(&newPassword, binding.Form)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
+		ctx.JSON(http.StatusBadRequest, lib.Response{
 			Success: false,
 			Message: err.Error(),
 		})
@@ -195,7 +195,7 @@ func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
 
 	hashPassword, err := lib.HashPassword(newPassword.NewPassword)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
+		ctx.JSON(http.StatusBadRequest, lib.Response{
 			Success: false,
 			Message: "Hash password failed",
 		})
@@ -211,7 +211,7 @@ func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
 				Email:    ac.userController.users[i].Email,
 			}
 
-			ctx.JSON(http.StatusOK, models.Response{
+			ctx.JSON(http.StatusOK, lib.Response{
 				Success: true,
 				Message: "Password successfully updated",
 				Data:    responseData,
@@ -220,7 +220,7 @@ func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
 		}
 	}
 
-	ctx.JSON(http.StatusNotFound, models.Response{
+	ctx.JSON(http.StatusNotFound, lib.Response{
 		Success: false,
 		Message: "User not found",
 	})
