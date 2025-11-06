@@ -45,7 +45,7 @@ paths:
       - application/x-www-form-urlencoded
       description: Change user password
       parameters:
-      - description: User ID
+      - description: User Id
         in: path
         name: id
         required: true
@@ -279,7 +279,7 @@ paths:
       - application/x-www-form-urlencoded
       description: Retrieving user data based on Id
       parameters:
-      - description: User ID
+      - description: User Id
         in: path
         name: id
         required: true
@@ -304,7 +304,7 @@ paths:
           description: User not found
           schema:
             $ref: '#/definitions/models.Response'
-      summary: Get user by ID
+      summary: Get user by Id
       tags:
       - users
     patch:
@@ -312,7 +312,7 @@ paths:
       - application/x-www-form-urlencoded
       description: Updating user data (username and email) based on Id
       parameters:
-      - description: User ID
+      - description: User Id
         in: path
         name: id
         required: true
@@ -354,9 +354,9 @@ paths:
     patch:
       consumes:
       - multipart/form-data
-      description: Upload or replace the profile picture for a user by ID.
+      description: Upload or replace the profile picture for a user by Id.
       parameters:
-      - description: User ID
+      - description: User Id
         in: path
         name: id
         required: true

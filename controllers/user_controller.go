@@ -49,12 +49,12 @@ func (uc *UserController) GetAllUser(ctx *gin.Context) {
 }
 
 // GetUserById godoc
-// @Summary      Get user by ID
+// @Summary      Get user by Id
 // @Description  Retrieving user data based on Id
 // @Tags         users
 // @Accept 		 x-www-form-urlencoded
 // @Produce      json
-// @Param        id   path      int  true  "User ID"
+// @Param        id   path      int  true  "User Id"
 // @Success      200  {object}  models.Response{data=models.User}  "Success get user"
 // @Failure      400  {object}  models.Response  "Invalid Id format"
 // @Failure      404  {object}  models.Response  "User not found"
@@ -163,7 +163,7 @@ func (uc *UserController) CreateUser(ctx *gin.Context) {
 // @Tags         users
 // @Accept       x-www-form-urlencoded
 // @Produce      json
-// @Param        id        path      int     true  "User ID"
+// @Param        id        path      int     true  "User Id"
 // @Param        username  formData  string  true  "Username (min 3, max 20 chars)"
 // @Param        email     formData  string  true  "Email address"
 // @Success      200       {object}  models.Response{data=models.User}  "User updated successfully"
@@ -265,11 +265,11 @@ func (uc *UserController) DeleteUser(ctx *gin.Context) {
 
 // UploadProfile godoc
 // @Summary Upload user profile picture
-// @Description Upload or replace the profile picture for a user by ID.
+// @Description Upload or replace the profile picture for a user by Id.
 // @Tags users
 // @Accept multipart/form-data
 // @Produce json
-// @Param id path int true "User ID"
+// @Param id path int true "User Id"
 // @Param file formData file true "Profile picture (JPEG or PNG, max 1MB)"
 // @Success 200 {object} models.Response "Successfully uploaded photo profile"
 // @Failure 400 {object} models.Response "Bad request (invalid Id, wrong file type, or file too large)"

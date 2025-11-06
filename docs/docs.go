@@ -31,7 +31,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "User ID",
+                        "description": "User Id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -346,11 +346,11 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Get user by ID",
+                "summary": "Get user by Id",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "User ID",
+                        "description": "User Id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -458,7 +458,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "User ID",
+                        "description": "User Id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -514,7 +514,7 @@ const docTemplate = `{
         },
         "/users/{id}/upload-profile": {
             "patch": {
-                "description": "Upload or replace the profile picture for a user by ID.",
+                "description": "Upload or replace the profile picture for a user by Id.",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -528,7 +528,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "User ID",
+                        "description": "User Id",
                         "name": "id",
                         "in": "path",
                         "required": true

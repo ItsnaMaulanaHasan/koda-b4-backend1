@@ -164,7 +164,7 @@ func (ac *AuthController) Login(ctx *gin.Context) {
 // @Tags         auth
 // @Accept       x-www-form-urlencoded
 // @Produce      json
-// @Param        id           path      int  true  "User ID"
+// @Param        id           path      int  true  "User Id"
 // @Param        newPassword  formData  string  true  "Input new password"  format(password)
 // @Success      200          {object}  models.Response{data=models.User}  "User updated successfully"
 // @Failure      400          {object}  models.Response  "Invalid ]request body or hashing password failed"

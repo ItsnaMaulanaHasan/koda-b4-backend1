@@ -25,7 +25,7 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "User ID",
+                        "description": "User Id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -340,11 +340,11 @@
                 "tags": [
                     "users"
                 ],
-                "summary": "Get user by ID",
+                "summary": "Get user by Id",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "User ID",
+                        "description": "User Id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -452,7 +452,7 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "User ID",
+                        "description": "User Id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -508,7 +508,7 @@
         },
         "/users/{id}/upload-profile": {
             "patch": {
-                "description": "Upload or replace the profile picture for a user by ID.",
+                "description": "Upload or replace the profile picture for a user by Id.",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -522,7 +522,7 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "User ID",
+                        "description": "User Id",
                         "name": "id",
                         "in": "path",
                         "required": true
