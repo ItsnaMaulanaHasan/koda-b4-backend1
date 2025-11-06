@@ -30,12 +30,12 @@ func NewUserController() *UserController {
 // @Router       /users [get]
 func (uc *UserController) GetAllUser(ctx *gin.Context) {
 	var responseData = []models.User{}
-	for i, u := range uc.users {
-		responseData[i] = models.User{
+	for _, u := range uc.users {
+		responseData = append(responseData, models.User{
 			Id:       u.Id,
 			Username: u.Username,
 			Email:    u.Email,
-		}
+		})
 	}
 	ctx.JSON(http.StatusOK, models.Response{
 		Success: true,
@@ -177,8 +177,8 @@ func (uc *UserController) UpdateUser(ctx *gin.Context) {
 	}
 
 	var userUpdate struct {
-		Username string `json:"username" binding:"required,min=3,max=20"`
-		Email    string `json:"email" binding:"required,email"`
+		Username string `form:"username" binding:"required,min=3,max=20"`
+		Email    string `form:"email" binding:"required,email"`
 	}
 	err = ctx.ShouldBindWith(&userUpdate, binding.Form)
 

@@ -21,6 +21,8 @@ import (
 func main() {
 	r := gin.Default()
 
+	r.RedirectTrailingSlash = true
+
 	r.Use(middlewares.AllowPrefic())
 	r.Use(middlewares.CorsMiddleware())
 
