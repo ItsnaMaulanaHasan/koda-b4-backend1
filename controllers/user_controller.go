@@ -5,7 +5,9 @@ import (
 	"gin-practice/lib"
 	"gin-practice/models"
 	"net/http"
+	"path/filepath"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -77,13 +79,13 @@ func (uc *UserController) GetUserById(ctx *gin.Context) {
 
 		ctx.JSON(http.StatusOK, models.Response{
 			Success: true,
-			Message: fmt.Sprintf("Success get user with id %d", id),
+			Message: "Success get user",
 			Data:    foundUser,
 		})
 	} else {
 		ctx.JSON(http.StatusNotFound, models.Response{
 			Success: false,
-			Message: fmt.Sprintf("User with id %d not found", id),
+			Message: "User not found",
 		})
 	}
 }
@@ -148,7 +150,7 @@ func (uc *UserController) CreateUser(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, models.Response{
 		Success: true,
-		Message: "Create user succesfully",
+		Message: "User created successfully",
 		Data:    body,
 	})
 }
@@ -203,13 +205,13 @@ func (uc *UserController) UpdateUser(ctx *gin.Context) {
 		foundUser.Password = ""
 		ctx.JSON(http.StatusOK, models.Response{
 			Success: true,
-			Message: fmt.Sprintf("User with id %d successfully updated", id),
+			Message: "User updated successfully",
 			Data:    foundUser,
 		})
 	} else {
 		ctx.JSON(http.StatusNotFound, models.Response{
 			Success: false,
-			Message: fmt.Sprintf("User with id %d not found", id),
+			Message: "User not found",
 		})
 	}
 }
@@ -248,13 +250,89 @@ func (uc *UserController) DeleteUser(ctx *gin.Context) {
 		foundUser.Password = ""
 		ctx.JSON(http.StatusOK, models.Response{
 			Success: true,
-			Message: fmt.Sprintf("User data with id %d successfully deleted", id),
+			Message: "User deleted successfully",
 			Data:    foundUser,
 		})
 	} else {
 		ctx.JSON(http.StatusNotFound, models.Response{
 			Success: false,
-			Message: fmt.Sprintf("User with id %d not found", id),
+			Message: "User not found",
 		})
 	}
+}
+
+func (uc *UserController) UploadProfile(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, models.Response{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	var foundUser *models.User
+	for i := range uc.users {
+		if uc.users[i].Id == id {
+			foundUser = &uc.users[i]
+			break
+		}
+	}
+
+	if foundUser == nil {
+		ctx.JSON(http.StatusNotFound, models.Response{
+			Success: false,
+			Message: "User not found",
+		})
+		return
+	}
+
+	file, err := ctx.FormFile("file")
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, models.Response{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	if file.Size > 1<<20 {
+		ctx.JSON(http.StatusBadRequest, models.Response{
+			Success: false,
+			Message: "File size must be less than 5MB",
+		})
+		return
+	}
+
+	contentType := file.Header.Get("Content-Type")
+	if contentType != "image/jpeg" && contentType != "image/png" {
+		ctx.JSON(http.StatusBadRequest, models.Response{
+			Success: false,
+			Message: "Only image files (JPEG, PNG) are allowed",
+		})
+		return
+	}
+
+	ext := filepath.Ext(file.Filename)
+	filename := fmt.Sprintf("user_%d_%d%s", id, time.Now().Unix(), ext)
+	filepath := "./photo-profile-users/" + filename
+
+	if err := ctx.SaveUploadedFile(file, filepath); err != nil {
+		ctx.JSON(http.StatusInternalServerError, models.Response{
+			Success: false,
+			Message: "Failed to save file",
+		})
+		return
+	}
+
+	foundUser.PhotoProfile = filename
+
+	ctx.JSON(http.StatusOK, models.Response{
+		Success: true,
+		Message: "Successfully uploaded photo profile",
+		Data: map[string]string{
+			"filename": filename,
+			"url":      "/photo-profile-users/" + filename,
+		},
+	})
 }
